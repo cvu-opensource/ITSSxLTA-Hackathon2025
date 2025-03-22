@@ -10,8 +10,7 @@ import requests
 import cv2
 import numpy as np
 
-from vehicle_detection import VehicleDetector
-from accident_detection import AccidentDetector
+from cv_detection import CVDetector
 
 load_dotenv()
 
@@ -29,8 +28,11 @@ if not BACKEND_API:
     raise ValueError("Error: BACKEND_API is not set in the environment variables.")
 
 # Load different detectors
-vehicle_detector = VehicleDetector(os.environ.get('VEHICLE_DETECTION_CKPT'), logger)
-accident_detector = AccidentDetector(os.environ.get('VEHICLE_DETECTION_CKPT'), logger)
+cv_detector = CVDetector(
+    detection_model_checkpoint=os.environ.get('VEHICLE_DETECTION_CKPT'),
+    classification_model_checkpoint=os.environ.get('ACCIDENT_CLASSIFICATION_CKPT'),
+    logger=logger
+)
 
 """
 Sending data to backend
@@ -45,7 +47,7 @@ async def send_traffic_data(results):
         "traffic_density": results
     }
 
-    # response = requests.post(BACKEND_API, json=data)
+    # response = requests.post(BACKEND_API + '/traffic_update', json=data)
     # if response.status_code == 200:
     #     logger.info('Traffic data updated successfully.\n')
     # else:
@@ -108,8 +110,7 @@ Run asynchronous processing
 async def process_images(images):
     """Processes images for both congestion detection and optical flow asynchronously."""
     tasks = [
-        asyncio.create_task(vehicle_detector.detect_vehicles(images)),
-        asyncio.create_task(accident_detector.detect_accident(images))
+        asyncio.create_task(cv_detector.run_processing(images))
     ]
     await asyncio.gather(*tasks)
 
