@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import logging
+from tqdm import tqdm
 
 import asyncio
 import requests
@@ -8,158 +10,143 @@ import requests
 import cv2
 import numpy as np
 
-from ultralytics import YOLO  # Using YOLOv8 for accident detection
+from vehicle_detection import VehicleDetector
+from accident_detection import AccidentDetector
 
 load_dotenv()
 
+# Configure logging format
+logging.basicConfig(
+    format="[%(asctime)s] %(message)s",  # Use %(asctime)s instead of %H:%M:%S
+    datefmt="%H:%M:%S",  # Correct time formatting
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
 # Load API endpoints
-BACKEND_API = os.environ('BACKEND_API')
+BACKEND_API = os.environ.get('BACKEND_API')
+if not BACKEND_API:
+    raise ValueError("Error: BACKEND_API is not set in the environment variables.")
 
-# Define models (replace with actual paths)
-ACCIDENT_MODEL_PATH = "models/yolov8_accident.pt"
-accident_model = YOLO(ACCIDENT_MODEL_PATH)  # temp
+# Load different detectors
+vehicle_detector = VehicleDetector(os.environ.get('VEHICLE_DETECTION_CKPT'), logger)
+accident_detector = AccidentDetector(os.environ.get('VEHICLE_DETECTION_CKPT'), logger)
 
 """
-Loading video feed for CV
+Sending data to backend
 """
 
-def load_live_videos():
-    """Extracts live Singapore highway camera feed using LTA website"""
-    
+async def send_traffic_data(results):
+    """Sends processed traffic flow data to the backend."""
+    logger.info('Sending data to backend api...')
+    data = {
+        "vehicle_count": results,
+        "avg_speed": results,
+        "traffic_density": results
+    }
+
+    # response = requests.post(BACKEND_API, json=data)
+    # if response.status_code == 200:
+    #     logger.info('Traffic data updated successfully.\n')
+    # else:
+        # logger.info('Failed to send traffic data.\n')
+
+"""
+Retrieve data for processing
+"""
+
+async def get_live_videos(prev_timestamp):
+    """Retrieves live Singapore highway camera feed using LTA website"""
     LTA_API = "https://api.data.gov.sg/v1/transport/traffic-images"
-    response = requests.get(LTA_API).json()
 
-    current_timestamp, cameras = response['items'][0]['timestamp'], response['items'][0]['cameras']
+    try:
+        response = requests.get(LTA_API)
+        response.raise_for_status()  # Raise an error for 4xx/5xx responses
+        response = response.json()
 
-    for idx, camera in enumerate(cameras):
-        print(idx, camera)
+    
+        acquisition_timestamp, cameras = response['items'][0]['timestamp'], response['items'][0]['cameras']
+        if acquisition_timestamp != prev_timestamp:
+            logger.info('New data acquired from LTA API!')
+            data = {}
 
-    return None  # TODO: Replace with actual live video source
+            for camera in tqdm(cameras, desc='Processing new data...'):
+                response = requests.get(camera['image'])
+                img_array = np.frombuffer(response.content, np.uint8)
+                image = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
 
+                data[camera['camera_id']] = {
+                    'timestamp': camera['timestamp'],
+                    'image_link': camera['image'],
+                    'image': image,
+                    'location': camera['location'],
+                    'metadata': {
+                        'image_height':camera['image_metadata']['height'],
+                        'image_width':camera['image_metadata']['width']
+                    }
+                }
 
-def load_simulated_videos():
-    """Loads simulation videos from a folder"""
-    video_folder = r"test_videos"
-    return sorted(Path(video_folder).rglob('*.mp4'))
+            return acquisition_timestamp, data
+        return prev_timestamp, None
 
+    except requests.exceptions.RequestException as e:
+        logger.info(f'Error fetching data from LTA API: {e}')
+        return prev_timestamp, None
 
-def extract_frames(video_source, target_fps=5):
-    """Extracts frames from a video dynamically based on target FPS"""
-    cap = cv2.VideoCapture(video_source)
-    frame_rate = cap.get(cv2.CAP_PROP_FPS)  # Original FPS
-    frame_interval = int(frame_rate / target_fps)  # Skip frames accordingly
-    frames = []
+def get_simulated_images():
+    """Retrieves simulation data from a test image folder"""
+    folder = r"../data/DETRAC_Upload"
+    data = {}
+    for idx, image in enumerate(sorted(Path(folder).rglob('*.jpg'))):
+        data[idx] = {'image': image}
+    return data
 
-    frame_count = 0
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
+"""
+Run asynchronous processing
+"""
+
+async def process_images(images):
+    """Processes images for both congestion detection and optical flow asynchronously."""
+    tasks = [
+        asyncio.create_task(vehicle_detector.detect_vehicles(images)),
+        asyncio.create_task(accident_detector.detect_accident(images))
+    ]
+    await asyncio.gather(*tasks)
+
+async def watcher(interval=60, wait=20):
+    """Monitors for new images and triggers processing functions"""
+    prev_timestamp = None
+    frame_buffer = {}
+    count = 0
+
+    while True:
+        count += 1
+
+        # Fetch live images from lta
+        prev_timestamp, images = await get_live_videos(prev_timestamp)
+        # Fetch simulated images from folder
+        # images = get_simulated_images()
+
+        # Combines batches of data into singular dict
+        if images:
+            for camera_id, image_data in images.items():
+                frame_buffer[camera_id] = frame_buffer.get(camera_id, []) + [image_data]
         
-        if frame_count % frame_interval == 0:  # Control FPS
-            frames.append(frame)
+        # If interval period is up
+        if count > interval // wait:
+            logger.info('Processing data...')
 
-        frame_count += 1
-    
-    cap.release()
-    return frames
+            # Post processing
+            results = await process_images(frame_buffer)
+            await send_traffic_data(results)
 
-"""
-Accident detection
-"""
+            # Reset variables
+            count = 0
+            frame_buffer = {}
 
-async def detect_accidents(frames):
-    """Runs accident detection model on extracted frames"""
-    results = []
-    for frame in frames:
-        # Run model on frame (change to video?)
-        results.append(accident_model(frame))
-
-        # Simulate async processing delay
-        await asyncio.sleep(0.1)
-
-    return results
-
-async def send_accident_updates(accident_results):
-    """Sends accident detection results to backend"""
-    for result in accident_results:
-
-        # TODO: Format this later on
-        data = {"location": "Highway X", "status": "Accident Detected", "confidence": result.conf}
-        requests.post(BACKEND_API + '/api/accidents', json=data)
-
-        # Prevent rate limit issues
-        await asyncio.sleep(0.1)
-
-"""
-Traffic flow detection
-"""
-
-def analyze_traffic_flow(video_source):
-    """Uses Optical Flow to detect traffic movement"""
-    cap = cv2.VideoCapture(video_source)
-    ret, prev_frame = cap.read()
-    prev_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
-
-    flow_data = []
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        flow = cv2.calcOpticalFlowFarneback(prev_gray, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
-        magnitude, _ = cv2.cartToPolar(flow[..., 0], flow[..., 1])
-        avg_speed = np.mean(magnitude)  # Average movement speed
-
-        flow_data.append(avg_speed)
-        prev_gray = gray
-    
-    cap.release()
-    return flow_data
-
-async def send_traffic_updates(flow_data):
-    """ Sends traffic flow data to backend """
-    avg_traffic_speed = np.mean(flow_data)
-    congestion_level = "High" if avg_traffic_speed < 1.0 else "Low"
-
-        # TODO: Format this later on
-    data = {"location": "Highway X", "traffic_speed": avg_traffic_speed, "congestion": congestion_level}
-    requests.post(BACKEND_API + '/api/traffic', json=data)
-    
-    # Prevent rate limit issues
-    await asyncio.sleep(0.1)
-
-"""
-Main pipeline
-"""
-
-async def main_pipeline(target_fps=5):
-    """Runs the entire CV pipeline"""
-    print("🚀 Starting Traffic Monitoring Pipeline...")
-
-    # Load videos
-    videos = load_simulated_videos()
-    # videos = load_live_videos()
-
-    for video in videos:
-        print(f"Processing video: {video}")
-
-        # Extract frames dynamically
-        frames = extract_frames(video, target_fps=target_fps)
-
-        # Run Accident Detection
-        accident_results = await detect_accidents(frames)
-
-        # Run Traffic Flow Analysis
-        flow_data = analyze_traffic_flow(video)
-
-        # Send data to backend
-        await asyncio.gather(
-            send_accident_updates(accident_results),
-            send_traffic_updates(flow_data)
-        )
+        await asyncio.sleep(wait)
 
 
-if __name__ == "__main__":
-    asyncio.run(main_pipeline(target_fps=5))
+if __name__=='__main__':
+    logger.info('Starting watcher...')
+    asyncio.run(watcher(interval=10, wait=5))
