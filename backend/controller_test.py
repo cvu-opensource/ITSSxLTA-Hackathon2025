@@ -134,26 +134,66 @@ async def get_all_data():
     async with AsyncClient() as client:
         # Get all camera data
         try: 
-            response = await client.post(SUPABASE_API + '/get_all_cameras')
-            if response.status_code != 200:
-                logger.info(f'Failed to retrieve camera data: {response.text}')
-                return {'success': False, 'message': response.text}
-            camera_data = response.json()
+            # response = await client.post(SUPABASE_API + '/get_all_cameras')
+            # if response.status_code != 200:
+            #     logger.info(f'Failed to retrieve camera data: {response.text}')
+            #     return {'success': False, 'message': response.text}
+            # camera_data = response.json()
+
+            camera_data = {
+                1001: {
+                    'latitude': 1.29531332, 'longitude': 103.871146, 'desc': 'test'
+                },
+                1002: {
+                    'latitude': 1.319541067, 'longitude': 103.8785627, 'desc': 'test'
+                },
+                1003: {
+                    'latitude': 1.323957439, 'longitude': 103.8728576, 'desc': 'test'
+                },
+                3704: {
+                    'latitude': 1.2958550156561, 'longitude': 103.880314665981, 'desc': 'test'
+                },
+                3705: {
+                    'latitude': 1.32743, 'longitude': 103.97383, 'desc': 'test'
+                }
+            }
         except Exception as e:
             logger.info(f'Error connecting to DB service: {e}')
             return {'success': False, 'message': f'Database service unreachable due to {e}'}
         
         for camera_id in camera_data:
+            camera_id = int(camera_id)
             result[camera_id] = {'camera_data': camera_data[camera_id]}
 
             # Get traffic data per sensor
             data = {'camera_id': camera_id, 'n': 10}
             try:
-                response = await client.post(SUPABASE_API + '/get_traffic_flow_by_sensor_last_n', json=data)
-                if response.status_code != 200:
-                    logger.info(f'Failed to retrieve traffic data: {response.text}')
-                    return {'success': False, 'message': response.text}
-                traffic_data = response.json()
+                # response = await client.post(SUPABASE_API + '/get_traffic_flow_by_sensor_last_n', json=data)
+                # if response.status_code != 200:
+                #     logger.info(f'Failed to retrieve traffic data: {response.text}')
+                #     return {'success': False, 'message': response.text}
+                # traffic_data = response.json()
+
+                traffic_data = {
+                    1: {
+                        'average_speed': 0.5,
+                        'flow_variability': 0.5, 
+                        'traffic_density': 0.5,
+                        'vehicle_count': 20
+                    },
+                    2: {
+                        'average_speed': 0.5,
+                        'flow_variability': 0.5, 
+                        'traffic_density': 0.5,
+                        'vehicle_count': 20
+                    },
+                    3: {
+                        'average_speed': 0.4,
+                        'flow_variability': 0.2, 
+                        'traffic_density': 0.6,
+                        'vehicle_count': 40
+                    }
+                }
 
                 # Compute average and relative values for traffic data before sending to UI
                 result[camera_id]['traffic_data'] = process_average_traffic_data(traffic_data)
@@ -171,12 +211,33 @@ async def get_camera_data_by_sensor(camera_id):
     """
     try: 
         async with AsyncClient() as client:
+            camera_id = int(camera_id)
             data = {'camera_id': camera_id}
-            response = await client.post(SUPABASE_API + '/get_camera', json=data)
-            if response.status_code != 200:
-                logger.info(f'Failed to retrieve camera data: {response.text}')
-                return {'success': False, 'message': response.text}
-            return response.json()
+            # response = await client.post(SUPABASE_API + '/get_camera', json=data)
+            # if response.status_code != 200:
+            #     logger.info(f'Failed to retrieve camera data: {response.text}')
+            #     return {'success': False, 'message': response.text}
+            # return response.json()
+
+            cameras = {
+                1001: {
+                    'latitude': 1.29531332, 'longitude': 103.871146, 'desc': 'test'
+                },
+                1002: {
+                    'latitude': 1.319541067, 'longitude': 103.8785627, 'desc': 'test'
+                },
+                1003: {
+                    'latitude': 1.323957439, 'longitude': 103.8728576, 'desc': 'test'
+                },
+                3704: {
+                    'latitude': 1.2958550156561, 'longitude': 103.880314665981, 'desc': 'test'
+                },
+                3705: {
+                    'latitude': 1.32743, 'longitude': 103.97383, 'desc': 'test'
+                },
+            }
+            return cameras[camera_id]
+        
     except Exception as e:
         logger.info(f'Error retrieving camera data for camera {camera_id}: {e}')
         return {'success': False, 'message': f'Error retrieving camera data for camera {camera_id}: {e}'}
@@ -190,11 +251,32 @@ async def get_traffic_data_by_sensor(camera_id):
     try: 
         async with AsyncClient() as client:
             data = {'camera_id': camera_id}
-            response = await client.post(SUPABASE_API + '/get_traffic_flow_by_sensor_last_n', json=data)
-            if response.status_code != 200:
-                logger.info(f'Failed to retrieve traffic data: {response.text}')
-                return {'success': False, 'message': response.text}
-            return response.json()
+            # response = await client.post(SUPABASE_API + '/get_traffic_flow_by_sensor_last_n', json=data)
+            # if response.status_code != 200:
+            #     logger.info(f'Failed to retrieve traffic data: {response.text}')
+            #     return {'success': False, 'message': response.text}
+            # return response.json()
+        
+            return {
+                1: {
+                    'average_speed': 0.5,
+                    'flow_variability': 0.5, 
+                    'traffic_density': 0.5,
+                    'vehicle_count': 20
+                },
+                2: {
+                    'average_speed': 0.5,
+                    'flow_variability': 0.5, 
+                    'traffic_density': 0.5,
+                    'vehicle_count': 20
+                },
+                3: {
+                    'average_speed': 0.4,
+                    'flow_variability': 0.2, 
+                    'traffic_density': 0.6,
+                    'vehicle_count': 40
+                },
+            }
     except Exception as e:
         logger.info(f'Error retrieving traffic data for camera {camera_id}: {e}')
         return {'success': False, 'message': f'Error retrieving traffic data for camera {camera_id}: {e}'}

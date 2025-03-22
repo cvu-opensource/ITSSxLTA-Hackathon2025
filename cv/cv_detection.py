@@ -124,8 +124,7 @@ class CVDetector:
                     'average_speed': average_speed,
                     'flow_variability': flow_variability, 
                     'traffic_density': traffic_density,
-                    'vehicle_counts': sorted(vehicle_counts),
-                    'bboxes': bboxes
+                    'vehicle_counts': vehicle_counts['total']
                 })
 
                 prev_frame = frame
