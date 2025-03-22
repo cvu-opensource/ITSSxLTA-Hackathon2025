@@ -1,3 +1,13 @@
+# Environment stuff
 *venv
 *.env
+__pycache__
+
+# Data stuff
+data
 *.gz
+*extracted_frames
+
+# Other scripts
+*/test.py
+*ultralytics
