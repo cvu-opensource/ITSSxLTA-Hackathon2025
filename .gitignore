@@ -1,0 +1,6 @@
+venv
+*jepa
+*my_awesome_model
+*video_classification_frozen
+*__pycache__/
+*.tar
