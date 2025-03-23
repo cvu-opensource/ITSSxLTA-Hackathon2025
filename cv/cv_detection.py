@@ -1,8 +1,8 @@
 import cv2
-import asyncio
 from ultralytics import YOLO
 from tqdm import tqdm
 import numpy as np
+from datetime import datetime
 
 
 class CVDetector:
@@ -103,9 +103,19 @@ class CVDetector:
             prev_frame = None
 
             for image_data in data:
-                frame = image_data['image']
+                # Removing unnecessary image data metadata
+                image_data.pop('location')
+                frame = image_data.pop('image')
+                timestamp = image_data.pop('timestamp')
+                metadata = image_data.pop('metadata')
+
+                # Re-formatting image data
+                image_data['datetime'] = timestamp
+                image_data['height'] = int(metadata['image_height'])
+                image_data['width'] = int(metadata['image_width'])
+
                 if frame is None:
-                    print(f"Error: Unable to load image for {camera_id}")
+                    self.logger.info(f'Error: Unable to load image for {camera_id}')
                     continue
 
                 # Perform optical flow
@@ -119,19 +129,19 @@ class CVDetector:
                 # Perform accident image classification
                 # output = self.classification_model(frame)
                 # self.process_classification_output(output)
-
-                results[camera_id].append({
-                    'average_speed': average_speed,
+                
+                results[int(camera_id)].append({
+                    'datetime': timestamp,
+                    'pixel_speed': average_speed,
                     'flow_variability': flow_variability, 
                     'traffic_density': traffic_density,
-                    'vehicle_counts': vehicle_counts['total']
+                    'num_vehicles': vehicle_counts['total']
                 })
 
                 prev_frame = frame
                 
         self.logger.info('Completed vehicle detection.')
-        print('results', results)
-        return results 
+        return images, results 
     
     def display_optical_flow(self, prev_frame, flow, mag, ang):
         """
