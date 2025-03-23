@@ -202,7 +202,7 @@ async def get_all_data():
             result[camera_id] = {'camera_data': camera_data[camera_id]}
 
             # Get traffic data per sensor
-            data = {'camera_id': camera_id, 'n': 10}
+            data = {'lta_camera_id ': camera_id, 'n': 10}
             try:
                 response = await client.post(SUPABASE_API + '/get_traffic_flow_by_sensor_last_n', json=data)
                 if response.status_code != 200:
@@ -226,7 +226,7 @@ async def get_camera_data_by_sensor(camera_id):
     """
     try: 
         async with AsyncClient() as client:
-            data = {'camera_id': camera_id}
+            data = {'lta_camera_id ': camera_id}
             response = await client.post(SUPABASE_API + '/get_camera', json=data)
             if response.status_code != 200:
                 logger.info(f'Failed to retrieve camera data: {response.text}')
@@ -244,7 +244,7 @@ async def get_traffic_data_by_sensor(camera_id):
     """
     try: 
         async with AsyncClient() as client:
-            data = {'camera_id': camera_id}
+            data = {'lta_camera_id ': camera_id}
             response = await client.post(SUPABASE_API + '/get_traffic_flow_by_sensor_last_n', json=data)
             if response.status_code != 200:
                 logger.info(f'Failed to retrieve traffic data: {response.text}')

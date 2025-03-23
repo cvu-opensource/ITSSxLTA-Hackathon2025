@@ -2,7 +2,11 @@ import cv2
 from ultralytics import YOLO
 from tqdm import tqdm
 import numpy as np
-from datetime import datetime
+
+from transformers import AutoModelForImageClassification
+from transformers import AutoImageProcessor
+from torchvision.transforms import Compose, Normalize, ToTensor, Resize
+import torch
 
 
 class CVDetector:
@@ -13,14 +17,29 @@ class CVDetector:
             logger,
             visualise=False
         ):
+        
+        # Detection model stuff
         if not detection_model_checkpoint:
             raise ValueError("Error: Detection model checkpoint is not set in the environment variables.")
+        self.detection_model = YOLO(detection_model_checkpoint, verbose=False)
+        self.class_names = ['bus', 'car', 'truck', 'two-wheeler']
+
+        # Classification model stuff
         if not classification_model_checkpoint:
             raise ValueError("Error: Classification model checkpoint is not set in the environment variables.")
-        
-        self.detection_model = YOLO(detection_model_checkpoint, verbose=False)
-        # self.classification_model = YOLO(classification_model_checkpoint)
-        self.class_names = ['bus', 'car', 'truck', 'two-wheeler']
+        self.classification_model = AutoModelForImageClassification.from_pretrained(
+            classification_model_checkpoint,
+            num_labels=2
+        )
+        img_size = 224
+        img_processor = AutoImageProcessor.from_pretrained(classification_model_checkpoint)
+        self._transforms = Compose([
+            ToTensor(),
+            Resize((img_size, img_size)),
+            Normalize(mean=img_processor.image_mean, std=img_processor.image_std)
+        ])
+
+        # Misc stuff
         self.logger = logger
         self.visualise = visualise
 
@@ -75,21 +94,23 @@ class CVDetector:
 
         return vehicle_counts, bboxes
     
-    def process_classification_output(self, output, conf_thresh=0.0):
+    def process_classification_output(self, output, conf_thresh=0.99995):
         """
-        Helper function to process yolo model outputs
+        Helper function to process classification model outputs
         """
-        return
+        maximum_softness = torch.nn.Softmax(dim=1)
+        probabilities = maximum_softness(output['logits'])
+        return probabilities.tolist()[0][1] > conf_thresh
 
     async def run_processing(self, images={}):
         """
         Run async to detect vehicles in a time series of images using YOLOv11s model
 
         Args:
-            Images [dict]: Dictionary of {camera_id: [data, data, data, ...], ...}
+            Images [dict]: Dictionary of {lta_camera_id : [data, data, data, ...], ...}
         
         Returns:
-            Results [dict]: Dictionary of {camera_id: [{'total': 1, cls: 1, ...}, ...], ...}
+            Results [dict]: Dictionary of {lta_camera_id : [{'total': 1, cls: 1, ...}, ...], ...}
         """
         if not images:
             self.logger.info('Error: No images passed into vehicle detector.')
@@ -127,8 +148,10 @@ class CVDetector:
                 vehicle_counts, bboxes = self.process_yolo_output(frame, output)
 
                 # Perform accident image classification
-                # output = self.classification_model(frame)
-                # self.process_classification_output(output)
+                transformed_frame = self._transforms(frame)
+                stacked_frame = torch.stack([transformed_frame], dim=0)
+                output = self.classification_model(stacked_frame)
+                accident_detected = self.process_classification_output(output)
                 
                 results[int(camera_id)].append({
                     'datetime': timestamp,
@@ -137,6 +160,8 @@ class CVDetector:
                     'traffic_density': traffic_density,
                     'num_vehicles': vehicle_counts['total']
                 })
+
+                image_data['accident_detected'] = accident_detected
 
                 prev_frame = frame
                 
