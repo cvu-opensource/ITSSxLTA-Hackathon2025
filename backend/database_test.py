@@ -57,7 +57,7 @@ def main():
     # print(db.get_traffic_flow_by_sensor_last_n({'lta_camera_id': 1000, 'n': 2}))
 
     # db.insert_images({'1001': [{'image_link': 'https://images.data.gov.sg/api/traffic-images/2025/03/ae231222-575f-4b4e-bffd-d80fbb9c2c1c.jpg', 'datetime': '2025-03-23T21:35:25+08:00', 'height': 240, 'width': 320, 'accident_detected': False}, {'image_link': 'https://images.data.gov.sg/api/traffic-images/2025/03/ae231222-575f-4b4e-bffd-d80fbb9c2c1c.jpg', 'datetime': '2025-03-23T21:35:25+08:00', 'height': 240, 'width': 320, 'accident_detected': False}]})
-    # print(db.get_image({'lta_camera_id':1001}))
+    print(db.get_image({'lta_camera_id':1001}))
 
 if __name__ == "__main__":
     main()

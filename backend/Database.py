@@ -1,11 +1,13 @@
 from supabase import create_client, Client
 import datetime
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 class Database:
     def __init__(self):
         self.url = "https://ebirfqroikyfceiqeyhu.supabase.co"
-        self.key = os.environ("SUPABASE_KEY")
+        self.key = os.environ.get("SUPABASE_KEY")
         self.supabase = create_client(self.url, self.key)
 
     ## CAMERA
