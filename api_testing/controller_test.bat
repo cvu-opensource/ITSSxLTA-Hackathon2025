@@ -1,38 +1,50 @@
 @echo off
 setlocal enabledelayedexpansion
-
-:: Define camera ID for testing
+set BACKEND_URL=http://localhost:8000
 set CAMERA_ID=1001
 
-:: Check if the service is running
+echo Testing Controller Service API health and availability!!
+
 echo.
 echo ===== Checking service health =====
+echo.
+
 curl http://localhost:8000/healthz
-
-:: Fetch all traffic data
 echo.
-echo ===== Fetching all traffic data =====
-curl -X GET http://localhost:8000/get_all_data
 
-:: Fetch camera data for a specific sensor
 echo.
-echo ===== Fetching camera data for %CAMERA_ID% =====
-curl -X GET "http://localhost:8000/get_camera_data_by_sensor?camera_id=%CAMERA_ID%"
+echo ===== Test controller calls =====
 
-:: Fetch traffic data for a specific sensor
 echo.
-echo ===== Fetching traffic data for %CAMERA_ID% =====
-curl -X GET "http://localhost:8000/get_traffic_data_by_sensor?camera_id=%CAMERA_ID%"
+echo 1. get_all_data
+curl -X GET "%BACKEND_URL%/get_all_data"
+echo.
 
-:: Send a traffic update manually
 echo.
-echo ===== Sending a manual traffic update =====
-curl -X POST "http://localhost:8000/save_traffic_flow" -H "Content-Type: application/json" -d "{\"camera_id\": \"%CAMERA_ID%\", \"traffic_flow\": 50}"
+echo 2. Test get_camera_data_by_sensor for %CAMERA_ID%
+curl -X GET "%BACKEND_URL%/get_camera_data_by_sensor?camera_id=%CAMERA_ID%"
+echo.
 
-:: Send data to the predictive analysis service
 echo.
-echo ===== Sending data to predictive analysis service =====
-curl -X POST "http://localhost:8000/predictive/analyze" -H "Content-Type: application/json" -d "{\"camera_id\": \"%CAMERA_ID%\", \"traffic_flow\": 50}"
+echo 3. Test get_traffic_data_by_sensor for %CAMERA_ID%
+curl -X GET "%BACKEND_URL%/get_traffic_data_by_sensor?camera_id=%CAMERA_ID%"
+echo.
+
+echo.
+echo ===== Test DB calls =====
+
+echo.
+echo 1. Test traffic_update
+curl -X POST "%BACKEND_URL%/traffic_update" -H "Content-Type: application/json" -d "{\"camera_id\": \"%CAMERA_ID%\", \"traffic_flow\": 50}"
+echo.
+
+echo.
+echo ===== Test recommendations =====
+
+echo.
+echo 1. Test get_recommendations
+curl -X POST "%BACKEND_URL%/get_recommendations"
+echo.
 
 echo.
 echo ===== All tests completed! =====

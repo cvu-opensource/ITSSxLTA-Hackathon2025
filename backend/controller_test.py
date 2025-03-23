@@ -98,10 +98,6 @@ async def save_traffic_flow(data: dict):
     except Exception as e:
         logger.info(f'Error connecting to DB service: {e}')
         return {'success': False, 'message': f'Database service unreachable due to {e}'}
-
-    # Send real-time update to UI clients
-    await broadcast(json.dumps(data))
-
     return {'success': True, 'message': 'Traffic data successfully sent to DB service.'}
 
 @app.websocket("/traffic_update")
@@ -255,9 +251,9 @@ async def get_traffic_data_by_sensor(camera_id):
             # if response.status_code != 200:
             #     logger.info(f'Failed to retrieve traffic data: {response.text}')
             #     return {'success': False, 'message': response.text}
-            # return response.json()
+            # traffic_data = response.json()
         
-            return {
+            traffic_data = {
                 1: {
                     'average_speed': 0.5,
                     'flow_variability': 0.5, 
@@ -277,6 +273,7 @@ async def get_traffic_data_by_sensor(camera_id):
                     'vehicle_count': 40
                 },
             }
+            return process_average_traffic_data(traffic_data)
     except Exception as e:
         logger.info(f'Error retrieving traffic data for camera {camera_id}: {e}')
         return {'success': False, 'message': f'Error retrieving traffic data for camera {camera_id}: {e}'}

@@ -2,4 +2,4 @@
 TITLE CONTROLLER
 CALL venv\scripts\activate
 CD backend
-uvicorn controller_test:app --reload
+uvicorn controller:app --reload
