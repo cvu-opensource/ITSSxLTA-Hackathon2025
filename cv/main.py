@@ -69,7 +69,7 @@ async def get_live_videos(prev_timestamp):
         acquisition_timestamp, cameras = response['items'][0]['timestamp'], response['items'][0]['cameras']
         image_timestamp = cameras[0]['timestamp']
 
-        if acquisition_timestamp != prev_timestamp:  # TODO: Switch to image_timestamp instead
+        if image_timestamp != prev_timestamp:  # TODO: Switch to image_timestamp instead
             logger.info('New data acquired from LTA API!')
             data = {}
 
@@ -137,8 +137,6 @@ async def watcher(interval=60, wait=20):
 
         # Fetch live images from lta
         prev_timestamp, images = await get_live_videos(prev_timestamp)
-        # Fetch simulated images from folder
-        # images = get_simulated_images()
 
         # Combines batches of data into singular dict for time-series data
         if images:

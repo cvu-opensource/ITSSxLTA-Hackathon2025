@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 # Environment variables
 load_dotenv()
 SUPABASE_API = os.environ.get("SUPABASE_API", "")
+PLANNING_API = os.environ.get("PLANNING_API", "")
 
 # FastAPI App
 app = FastAPI()
@@ -98,16 +99,38 @@ def process_camera_data(camera_data):
     Given a dictionary of camera data, add in hardcoded details for UI usage
     """
     for camera_id, data in camera_data.items():
-        data['angle'] =  camera_details[camera_id]['angle']
-        data['description'] =  camera_details[camera_id]['description']
+        if camera_id in camera_details:
+            data['angle'] =  camera_details[camera_id]['angle']
+            data['description'] =  camera_details[camera_id]['description']
+        else:
+            data['angle'] =  0
+            data['description'] = 'Road'
     return camera_data
 
-def process_grouped_traffic_data(data):
+def process_grouped_traffic_data(traffic_data):
     """
     Given n records of traffic data for different cameras, group cameras based on mapping,
     compute the average to determine priority based on relative values
     """
-    return data
+    grouped_data = {}
+    for mapping, camera_ids in camera_mapping.items():
+        temp = {}
+
+        # For each mapping, extract all relative statistics from average traffic data regardless of sensor
+        for camera_id in camera_ids:
+            if camera_id in traffic_data:
+                data = traffic_data[camera_id]
+                for statistic, value in data.items():
+                    temp[statistic] = temp.get(statistic, []) + [float(value['relative'])]
+
+        # Convert extracted relative traffic data per sensor into one averaged value across sensors per mapping
+        grouped_data[mapping] = {}
+        for statistic in temp:
+            grouped_data[mapping][statistic] = sum(temp[statistic]) / len(temp[statistic])
+
+    # Sort mappings by averaged relative data 
+    logger.info(f'grouped_data {grouped_data}')
+    return grouped_data
 
 """
 Handles API calls
@@ -143,7 +166,7 @@ async def save_traffic_flow(results: dict):
     Sends traffic flow updates to the database service for storage
     """
     try:
-        logger.info('Saving traffic flow data.')
+        logger.info(f'Saving traffic flow data {results}.')
         db.insert_traffic_flows(results)
     except Exception as e:
         logger.error(f'Error connecting to DB service to insert_traffic_flows: {e}')
@@ -240,7 +263,7 @@ async def get_camera_data_by_sensor(camera_id):
     try: 
         data = {'lta_camera_id': camera_id}
         camera_data = db.get_camera(data)
-        return process_camera_data({camera_id: camera_data})
+        return process_camera_data({int(camera_id): camera_data})
     except Exception as e:
         logger.info(f'Error retrieving camera data for camera {camera_id}: {e}')
         return {'success': False, 'message': f'Error retrieving camera data for camera {camera_id}: {e}'}
@@ -265,39 +288,32 @@ async def get_live_traffic_updates():
     """
     Fetches traffic data from database service when UI client refreshes dashboard page
     """
-    result = {}
     # Get all camera data
-    logger.info('Retrieving camera data.')
+    logger.info('Retrieving camera data for live traffic updates.')
     try: 
         camera_data = db.get_all_cameras()
-        camera_data = process_camera_data(camera_data)
     except Exception as e:
         logger.error(f'Error connecting to DB service for get_all_cameras: {e}')
         return {'success': False, 'message': f'Database service unreachable due to {e}'}
     
-    logger.info('Retrieving image and traffic data.')
+    result = {}
+    logger.info('Retrieving traffic data for live traffic updates.')
     for camera_id in camera_data:
-        result[camera_id] = {'camera_data': camera_data[camera_id]}
 
         # Get traffic data per sensor
-        data = {'lta_camera_id': camera_id, 'n': 10}
+        data = {'lta_camera_id': camera_id, 'n': 100}
         try:
             traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
-
-            # Compute average and relative values for traffic data before sending to UI
-            result[camera_id]['traffic_data'] = process_average_traffic_data(traffic_data)
+            
+            # Compute average and relative values for traffic data first
+            result[camera_id] = process_average_traffic_data(traffic_data)
 
         except Exception as e:
             logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
             return {'success': False, 'message': f'Database service unreachable due to {e}'}
-    
-        # Get latest image data per sensor
-        data = {'lta_camera_id': camera_id}
-        try:
-            result[camera_id]['camera_data'] = db.get_image(data)
-        except Exception as e:
-            logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
-            return {'success': False, 'message': f'Database service unreachable due to {e}'}
+        
+    logger.info('Grouping traffic data for live traffic updates.')
+    result = process_grouped_traffic_data(result)
     return result
 
 
@@ -334,7 +350,7 @@ async def get_recommendations():
     logger.info('Sending data to retrieve recommendations.')
     try:
         async with AsyncClient() as client:
-            response = await client.post("http://predictive-service/analyze", json=data)  # TODO: Change to actual service deets
+            response = await client.post(PLANNING_API + '/get_recommendations', json=data)  # TODO: Change to actual service deets
             return response.json()
     except Exception as e:
         logger.info(f'Error retrieving planning recommendations due to {e}')
