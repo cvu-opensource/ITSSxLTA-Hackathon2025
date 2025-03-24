@@ -27,7 +27,6 @@ logger = logging.getLogger(__name__)
 # Load endpoints
 LTA_API = "https://api.data.gov.sg/v1/transport/traffic-images"
 BACKEND_API = os.environ.get('BACKEND_API')
-BACKEND_WS_API = os.environ.get('BACKEND_WS_API')
 
 
 # Load different detectors
