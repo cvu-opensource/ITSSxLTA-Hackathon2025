@@ -6,6 +6,9 @@ import asyncio
 from httpx import AsyncClient
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
+# Get some hardcoded values 
+from hardcode import camera_details, camera_mapping
+
 # Initialise DB
 from Database import Database
 db = Database()
@@ -79,7 +82,7 @@ def process_average_traffic_data(data):
     temp = {}
     for datetime, traffic_data in data.items():
         for k, v in traffic_data.items():
-            temp[k] = temp.get(k, []) + [v]
+            temp[k] = temp.get(k, []) + [float(v)]
 
     result = {}
     for statistic in temp:
@@ -89,6 +92,22 @@ def process_average_traffic_data(data):
             'relative': temp[statistic][-1] / average
         }
     return result
+
+def process_camera_data(camera_data):
+    """
+    Given a dictionary of camera data, add in hardcoded details for UI usage
+    """
+    for camera_id, data in camera_data.items():
+        data['angle'] =  camera_details[camera_id]['angle']
+        data['description'] =  camera_details[camera_id]['description']
+    return camera_data
+
+def process_grouped_traffic_data(data):
+    """
+    Given n records of traffic data for different cameras, group cameras based on mapping,
+    compute the average to determine priority based on relative values
+    """
+    return data
 
 """
 Handles API calls
@@ -175,13 +194,14 @@ async def receive_traffic_update(data: dict):
 @app.get("/get_all_data")
 async def get_all_data():
     """
-    Fetches traffic data from database service when UI client refreshes
+    Fetches traffic data from database service when UI client refreshes map page
     """
     result = {}
     # Get all camera data
     logger.info('Retrieving camera data.')
     try: 
         camera_data = db.get_all_cameras()
+        camera_data = process_camera_data(camera_data)
     except Exception as e:
         logger.error(f'Error connecting to DB service for get_all_cameras: {e}')
         return {'success': False, 'message': f'Database service unreachable due to {e}'}
@@ -191,7 +211,7 @@ async def get_all_data():
         result[camera_id] = {'camera_data': camera_data[camera_id]}
 
         # Get traffic data per sensor
-        data = {'lta_camera_id ': camera_id, 'n': 10}
+        data = {'lta_camera_id': camera_id, 'n': 10}
         try:
             traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
 
@@ -203,9 +223,9 @@ async def get_all_data():
             return {'success': False, 'message': f'Database service unreachable due to {e}'}
     
         # Get latest image data per sensor
-        data = {'lta_camera_id ': camera_id}
+        data = {'lta_camera_id': camera_id}
         try:
-            result[camera_id]['camera_data'] = db.get_image(data)
+            result[camera_id]['image_data'] = db.get_image(data)
         except Exception as e:
             logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
             return {'success': False, 'message': f'Database service unreachable due to {e}'}
@@ -218,8 +238,9 @@ async def get_camera_data_by_sensor(camera_id):
     Fetches camera data from database service for a specific sensor to create pin in UI
     """
     try: 
-        data = {'lta_camera_id ': camera_id}
-        return db.get_camera(data)
+        data = {'lta_camera_id': camera_id}
+        camera_data = db.get_camera(data)
+        return process_camera_data({camera_id: camera_data})
     except Exception as e:
         logger.info(f'Error retrieving camera data for camera {camera_id}: {e}')
         return {'success': False, 'message': f'Error retrieving camera data for camera {camera_id}: {e}'}
@@ -231,7 +252,7 @@ async def get_traffic_data_by_sensor(camera_id):
     Fetches traffic data from database service for a specific sensor to update pin popup in UI
     """
     try: 
-        data = {'lta_camera_id ': camera_id, 'n': 10}
+        data = {'lta_camera_id': camera_id, 'n': 10}
         traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
         return process_average_traffic_data(traffic_data)
     except Exception as e:
@@ -239,8 +260,49 @@ async def get_traffic_data_by_sensor(camera_id):
         return {'success': False, 'message': f'Error retrieving traffic data for camera {camera_id}: {e}'}
 
 
+@app.get('/get_live_traffic_updates')
+async def get_live_traffic_updates():
+    """
+    Fetches traffic data from database service when UI client refreshes dashboard page
+    """
+    result = {}
+    # Get all camera data
+    logger.info('Retrieving camera data.')
+    try: 
+        camera_data = db.get_all_cameras()
+        camera_data = process_camera_data(camera_data)
+    except Exception as e:
+        logger.error(f'Error connecting to DB service for get_all_cameras: {e}')
+        return {'success': False, 'message': f'Database service unreachable due to {e}'}
+    
+    logger.info('Retrieving image and traffic data.')
+    for camera_id in camera_data:
+        result[camera_id] = {'camera_data': camera_data[camera_id]}
+
+        # Get traffic data per sensor
+        data = {'lta_camera_id': camera_id, 'n': 10}
+        try:
+            traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
+
+            # Compute average and relative values for traffic data before sending to UI
+            result[camera_id]['traffic_data'] = process_average_traffic_data(traffic_data)
+
+        except Exception as e:
+            logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
+            return {'success': False, 'message': f'Database service unreachable due to {e}'}
+    
+        # Get latest image data per sensor
+        data = {'lta_camera_id': camera_id}
+        try:
+            result[camera_id]['camera_data'] = db.get_image(data)
+        except Exception as e:
+            logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
+            return {'success': False, 'message': f'Database service unreachable due to {e}'}
+    return result
+
+
 @app.post("/get_recommendations")
-async def send_to_predictive_service():
+async def get_recommendations():
     """
     Sends data to the predictive analysis service from db and returns to UI
     """
@@ -248,6 +310,7 @@ async def send_to_predictive_service():
     
     try:
         camera_data = db.get_all_cameras()
+        camera_data = process_camera_data(camera_data)
     except Exception as e:
         logger.info(f'Error retrieving traffic flow for recommendations data due to {e}')
         return {'success': False, 'message': f'Error retrieving camera data for recommendations: {e}'}
@@ -257,7 +320,7 @@ async def send_to_predictive_service():
 
         logger.info(f'Retrieving traffic flow data for camera-{camera_id} from db for recommendations.')
         try:
-            data = {'lta_camera_id ': camera_id, 'n': 10}
+            data = {'lta_camera_id': camera_id, 'n': 10}
             traffic_flow_data = db.get_traffic_flow_by_sensor_last_n(data)
         except Exception as e:
             logger.info(f'Error retrieving traffic flow data for recommendations due to {e}')
