@@ -21,7 +21,8 @@ data = {
         'video': [],
     }
 
-sample_every = 5  # lots of frames that look very similar, wasting our resources
+sample_accidents_every = 20  # lots of frames that look very similar, wasting our resources
+sample_nonaccidents_every = 1 
 # training / evaling on them again. so sample every n frames.
 tracker_dict = {}  # horrible naming!
 
@@ -50,8 +51,10 @@ for dir in dirs:
 
                     if frame >= accident_frame:
                         label = 1
+                        sample_every = sample_accidents_every
                     else:
                         label = 0
+                        sample_every = sample_nonaccidents_every
 
                 if frame >= tracker_dict[video_idx][-1] + sample_every:
                     tracker_dict[video_idx].append(frame)

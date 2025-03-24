@@ -6,16 +6,16 @@ import torch
 
 # --- MODEL STUFF ---
 
-checkpoint = "my_awesome_model/checkpoint-326"
+checkpoint = "my_awesome_model_more_balanced/checkpoint-1915"
 image_processor = AutoImageProcessor.from_pretrained(checkpoint)
 model = AutoModelForImageClassification.from_pretrained(
     checkpoint,
-    num_labels=2,
+    # num_labels=2,
 )
 maximum_softness = torch.nn.Softmax(dim=1)
 
 # --- DATA PREPROCESSING STUFF ---
-img_size = 224  # only this size works rn sorry
+img_size = 384  # only this size works rn sorry
 normalize = Normalize(mean=image_processor.image_mean, std=image_processor.image_std)
 resize = Resize((img_size, img_size))
 _transforms = Compose([ToTensor(), resize, normalize])
@@ -32,6 +32,11 @@ fps = ['my_awesome_model/0.jpg',
        '/mnt/e/data/cadp/extracted_frames-002/extracted_frames/000329/0.jpg',
       '/mnt/e/data/cadp/extracted_frames-002/extracted_frames/001202/169.jpg',
       '/mnt/e/data/cadp/extracted_frames-002/extracted_frames/000342/58.jpg',
+      '/mnt/e/data/cadp/extracted_frames-002/extracted_frames/000342/59.jpg',
+      '/mnt/e/data/cadp/extracted_frames-002/extracted_frames/000342/20.jpg',
+      '/mnt/e/data/cadp/extracted_frames-002/extracted_frames/000342/14.jpg',
+      '/mnt/e/data/cadp/extracted_frames-002/extracted_frames/000342/57.jpg',
+      '/mnt/e/data/cadp/extracted_frames-002/extracted_frames/000342/50.jpg',
       '/mnt/e/data/cadp/extracted_frames-002/extracted_frames/001202/163.jpg',
       ]
 inputs = []
