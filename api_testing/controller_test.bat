@@ -31,11 +31,16 @@ curl -X GET "%BACKEND_URL%/get_traffic_data_by_sensor?camera_id=%CAMERA_ID%"
 echo.
 
 echo.
+echo 4. Test get_live_traffic_updates for %CAMERA_ID%
+curl -X GET "%BACKEND_URL%/get_live_traffic_updates"
+echo.
+
+echo.
 echo ===== Test DB calls =====
 
 echo.
 echo 1. Test traffic_update
-curl -X POST "%BACKEND_URL%/traffic_update" -H "Content-Type: application/json" -d "{\"camera_id\": \"%CAMERA_ID%\", \"traffic_flow\": 50}"
+@REM curl -X POST "%BACKEND_URL%/traffic_update" -H "Content-Type: application/json" -d "{\"camera_id\": \"%CAMERA_ID%\", \"traffic_flow\": 50}"
 echo.
 
 echo.
