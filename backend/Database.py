@@ -94,6 +94,22 @@ class Database:
 
         return response.data[0]
     
+    def get_accidents_by_sensor_last_n(self, dct):
+        '''
+        Function:   Gets last n records of image for sensor with accident detected
+        Input:      Dictionary with lta_camera_id: int, n: int
+        Output:     List of dictionary with datetime: string (in iso format)
+        '''
+
+        response = self.supabase.rpc(
+            'get_accidents_by_sensor_last_n', 
+            params={
+                "lta_camera_id_in": dct['lta_camera_id'],
+                "n": dct['n']
+            }
+        ).execute()
+        return response.data
+    
     ## TRAFFIC FLOW
 
     def insert_traffic_flows(self, dct):
@@ -123,13 +139,14 @@ class Database:
         '''
 
         response = self.supabase.rpc(
-            'get_traffic_flow', 
+            'get_traffic_flow_by_sensor_last_n', 
             params={
-                "lta_camera_id_in": dct['lta_camera_id']
+                "lta_camera_id_in": dct['lta_camera_id'],
+                "n": dct['n']
             }
         ).execute()
 
         temp = {}
-        for i in response.data[:dct['n']]:
+        for i in response.data:
             temp[i['datetime']] = i
         return temp
