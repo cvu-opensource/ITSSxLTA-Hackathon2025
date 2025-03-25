@@ -324,7 +324,12 @@ async def get_all_data():
             traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
 
             # Compute average and relative values for traffic data before sending to UI
-            result[int(camera_id)]['traffic_data'] = process_average_traffic_data(traffic_data)
+            traffic_data = process_average_traffic_data(traffic_data)
+            if traffic_data['pixel_speed']['relative'] < 1.0 and traffic_data['traffic_density']['relative'] > 1.0 and traffic_data['num_vehicles']['relative'] > 1.0:
+                traffic_data['status'] = 'congested'
+            else:
+                traffic_data['status'] = 'normal'
+            result[int(camera_id)]['traffic_data'] = traffic_data
 
         except Exception as e:
             logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
@@ -350,7 +355,7 @@ async def get_camera_data_by_sensor(camera_id):
         camera_data = db.get_camera(data)
         return process_camera_data({int(camera_id): camera_data})
     except Exception as e:
-        logger.info(f'Error retrieving camera data for camera {camera_id}: {e}')
+        logger.error(f'Error retrieving camera data for camera {camera_id}: {e}')
         return {'success': False, 'message': f'Error retrieving camera data for camera {camera_id}: {e}'}
 
 
@@ -364,7 +369,7 @@ async def get_traffic_data_by_sensor(camera_id):
         traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
         return process_average_traffic_data(traffic_data)
     except Exception as e:
-        logger.info(f'Error retrieving traffic data for camera {camera_id}: {e}')
+        logger.error(f'Error retrieving traffic data for camera {camera_id}: {e}')
         return {'success': False, 'message': f'Error retrieving traffic data for camera {camera_id}: {e}'}
 
 
@@ -409,11 +414,10 @@ async def get_live_traffic_updates():
 
 
 @app.post("/get_recommendations")
-async def get_recommendations():
+async def get_recommendations(area):
     """
     Sends data to the predictive analysis service from db and returns response to UI
     """
-    areas = ['TPE', 'KPE', 'PIE']
     logger.info('Retrieving all sensors from db for recommendations.')
     
     try:
@@ -424,34 +428,32 @@ async def get_recommendations():
         return {'success': False, 'message': f'Error retrieving camera data for recommendations: {e}'}
     
     # Only get data for sensors within specified areas
-    data = {}
-    for area in areas:
-        for camera_id in camera_mapping[area]:
-            camera_data = camera_datas[camera_id]
+    recommendation_data = {}
+    for camera_id in camera_mapping[area]:
+        camera_data = camera_datas[camera_id]
 
-            logger.info(f'Retrieving traffic flow data for camera-{camera_id} from db for recommendations.')
-            try:
-                data = {'lta_camera_id': camera_id, 'n': 1000}
-                traffic_flow_data = db.get_traffic_flow_by_sensor_last_n(data)
-            except Exception as e:
-                logger.info(f'Error retrieving traffic flow data for recommendations due to {e}')
-                return {'success': False, 'message': f'Error retrieving traffic flow data for recommendations: {e}'}
+        try:
+            data = {'lta_camera_id': camera_id, 'n': 1000}
+            traffic_flow_data = db.get_traffic_flow_by_sensor_last_n(data)
+            traffic_flow_data = process_average_traffic_data(traffic_flow_data)
+        except Exception as e:
+            logger.error(f'Error retrieving traffic flow data for recommendations due to {e}')
+            return {'success': False, 'message': f'Error retrieving traffic flow data for recommendations: {e}'}
 
-            logger.info(f'Retrieving accident data for camera-{camera_id} from db for recommendations.')
-            try:
-                data = {'lta_camera_id': camera_id, 'n': 1000}
-                accident_data = db.get_accidents_by_sensor_last_n(data)
-            except Exception as e:
-                logger.info(f'Error retrieving accident data for recommendations due to {e}')
-                return {'success': False, 'message': f'Error retrieving accident data for recommendations: {e}'}
-            
-            data[int(camera_id)] = {
-                'camera_data': camera_data,
-                'traffic_flow': traffic_flow_data,
-                'accident_data': accident_data
-            }
+        try:
+            data = {'lta_camera_id': camera_id, 'n': 1000}
+            accident_data = db.get_accidents_by_sensor_last_n(data)
+        except Exception as e:
+            logger.error(f'Error retrieving accident data for recommendations due to {e}')
+            return {'success': False, 'message': f'Error retrieving accident data for recommendations: {e}'}
+        
+        recommendation_data[int(camera_id)] = {
+            'camera_data': camera_data,
+            'traffic_data': traffic_flow_data,
+            'accident_data': accident_data
+        }
 
-    logger.info(f'Sending data to retrieve recommendations. {data}')
+    logger.info(f'Sending data to retrieve recommendations. {recommendation_data}')
     try:
         async with AsyncClient() as client:
             response = await client.post(PLANNING_API + '/get_planning_recommendations', json=data)
