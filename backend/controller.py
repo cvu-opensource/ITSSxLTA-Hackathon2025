@@ -6,6 +6,9 @@ import asyncio
 from httpx import AsyncClient
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
+# Initialise DB
+from Database import Database
+db = Database()
 
 # Configure logging format
 logging.basicConfig(
@@ -108,15 +111,11 @@ async def save_cameras(cameras: dict):
         cameras = {
             int(camera_id): data for camera_id, data in cameras.items()
         }
-
         logger.info('Updating camera data in DB.')
-        response = await http_client.post(SUPABASE_API + '/insert_cameras', json=cameras)
-        if response.status_code != 200:
-            logger.error(f'Failed to save traffic data: {response.text}')
-            return {'success': False, 'message': response.text}
+        db.insert_cameras(cameras)
     except Exception as e:
-        logger.error(f'Error connecting to DB service to insert_cameras: {e}')
-        return {'success': False, 'message': f'Database service unreachable due to {e}'}
+        logger.error(f'Failed to save camera data with insert_cameras: {e}')
+        return {'success': False, 'message': f'Database insert_cameras service unreachable due to {e}'}
     return {'success': True, 'message': 'Camera data successfully updated in DB service.'}
 
 
@@ -126,13 +125,10 @@ async def save_traffic_flow(results: dict):
     """
     try:
         logger.info('Saving traffic flow data.')
-        response = await http_client.post(SUPABASE_API + '/insert_traffic_flows', json=results)
-        if response.status_code != 200:
-            logger.error(f'Failed to save traffic data: {response.text}')
-            return {'success': False, 'message': response.text}
+        db.insert_traffic_flows(results)
     except Exception as e:
         logger.error(f'Error connecting to DB service to insert_traffic_flows: {e}')
-        return {'success': False, 'message': f'Database service unreachable due to {e}'}
+        return {'success': False, 'message': f'Database insert_traffic_flows service unreachable due to {e}'}
     return {'success': True, 'message': 'Traffic data successfully sent to DB service.'}
 
 
@@ -145,15 +141,11 @@ async def save_images(images: dict):
         images = {
             int(camera_id): data for camera_id, data in images.items()
         }
-
         logger.info('Saving new traffic images.')
-        response = await http_client.post(SUPABASE_API + '/insert_images', json=images)
-        if response.status_code != 200:
-            logger.error(f'Failed to save traffic data: {response.text}')
-            return {'success': False, 'message': response.text}
+        db.insert_images(images)
     except Exception as e:
         logger.error(f'Error connecting to DB service to insert_images: {e}')
-        return {'success': False, 'message': f'Database service unreachable due to {e}'}
+        return {'success': False, 'message': f'Database insert_images service unreachable due to {e}'}
     return {'success': True, 'message': 'Image data successfully sent to DB service.'}
 
 
@@ -186,36 +178,37 @@ async def get_all_data():
     Fetches traffic data from database service when UI client refreshes
     """
     result = {}
-    async with AsyncClient() as client:
-        # Get all camera data
-        try: 
-            response = await client.post(SUPABASE_API + '/get_all_cameras')
-            if response.status_code != 200:
-                logger.info(f'Failed to retrieve camera data: {response.text}')
-                return {'success': False, 'message': response.text}
-            camera_data = response.json()
+    # Get all camera data
+    logger.info('Retrieving camera data.')
+    try: 
+        camera_data = db.get_all_cameras()
+    except Exception as e:
+        logger.error(f'Error connecting to DB service for get_all_cameras: {e}')
+        return {'success': False, 'message': f'Database service unreachable due to {e}'}
+    
+    logger.info('Retrieving image and traffic data.')
+    for camera_id in camera_data:
+        result[camera_id] = {'camera_data': camera_data[camera_id]}
+
+        # Get traffic data per sensor
+        data = {'lta_camera_id ': camera_id, 'n': 10}
+        try:
+            traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
+
+            # Compute average and relative values for traffic data before sending to UI
+            result[camera_id]['traffic_data'] = process_average_traffic_data(traffic_data)
+
         except Exception as e:
-            logger.info(f'Error connecting to DB service for get_all_cameras: {e}')
+            logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
             return {'success': False, 'message': f'Database service unreachable due to {e}'}
-        
-        for camera_id in camera_data:
-            result[camera_id] = {'camera_data': camera_data[camera_id]}
-
-            # Get traffic data per sensor
-            data = {'camera_id': camera_id, 'n': 10}
-            try:
-                response = await client.post(SUPABASE_API + '/get_traffic_flow_by_sensor_last_n', json=data)
-                if response.status_code != 200:
-                    logger.info(f'Failed to retrieve traffic data: {response.text}')
-                    return {'success': False, 'message': response.text}
-                traffic_data = response.json()
-
-                # Compute average and relative values for traffic data before sending to UI
-                result[camera_id]['traffic_data'] = process_average_traffic_data(traffic_data)
-
-            except Exception as e:
-                logger.info(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
-                return {'success': False, 'message': f'Database service unreachable due to {e}'}
+    
+        # Get latest image data per sensor
+        data = {'lta_camera_id ': camera_id}
+        try:
+            result[camera_id]['camera_data'] = db.get_image(data)
+        except Exception as e:
+            logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
+            return {'success': False, 'message': f'Database service unreachable due to {e}'}
     return result
 
 
@@ -225,13 +218,8 @@ async def get_camera_data_by_sensor(camera_id):
     Fetches camera data from database service for a specific sensor to create pin in UI
     """
     try: 
-        async with AsyncClient() as client:
-            data = {'camera_id': camera_id}
-            response = await client.post(SUPABASE_API + '/get_camera', json=data)
-            if response.status_code != 200:
-                logger.info(f'Failed to retrieve camera data: {response.text}')
-                return {'success': False, 'message': response.text}
-            return response.json()
+        data = {'lta_camera_id ': camera_id}
+        return db.get_camera(data)
     except Exception as e:
         logger.info(f'Error retrieving camera data for camera {camera_id}: {e}')
         return {'success': False, 'message': f'Error retrieving camera data for camera {camera_id}: {e}'}
@@ -243,15 +231,9 @@ async def get_traffic_data_by_sensor(camera_id):
     Fetches traffic data from database service for a specific sensor to update pin popup in UI
     """
     try: 
-        async with AsyncClient() as client:
-            data = {'camera_id': camera_id}
-            response = await client.post(SUPABASE_API + '/get_traffic_flow_by_sensor_last_n', json=data)
-            if response.status_code != 200:
-                logger.info(f'Failed to retrieve traffic data: {response.text}')
-                return {'success': False, 'message': response.text}
-            
-            traffic_data = response.json()
-            return process_average_traffic_data(traffic_data)
+        data = {'lta_camera_id ': camera_id, 'n': 10}
+        traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
+        return process_average_traffic_data(traffic_data)
     except Exception as e:
         logger.info(f'Error retrieving traffic data for camera {camera_id}: {e}')
         return {'success': False, 'message': f'Error retrieving traffic data for camera {camera_id}: {e}'}
@@ -265,9 +247,7 @@ async def send_to_predictive_service():
     logger.info('Retrieving all sensors from db for recommendations.')
     
     try:
-        async with AsyncClient() as client:
-            response = await client.post(SUPABASE_API + '/get_all_cameras')
-            camera_data = response.json()
+        camera_data = db.get_all_cameras()
     except Exception as e:
         logger.info(f'Error retrieving traffic flow for recommendations data due to {e}')
         return {'success': False, 'message': f'Error retrieving camera data for recommendations: {e}'}
@@ -277,32 +257,21 @@ async def send_to_predictive_service():
 
         logger.info(f'Retrieving traffic flow data for camera-{camera_id} from db for recommendations.')
         try:
-            async with AsyncClient() as client:
-                response = await client.post(SUPABASE_API + '/get_traffic_flow_by_sensor_last_n')
-                traffic_flow_data = response.json()
-        except Exception as e:
-            logger.info(f'Error retrieving traffic flow data for recommendations due to {e}')
-            return {'success': False, 'message': f'Error retrieving traffic flow data for recommendations: {e}'}
-        
-        logger.info(f'Retrieving accident data for camera-{camera_id} from db for recommendations.')
-        try:
-            async with AsyncClient() as client:
-                response = await client.post(SUPABASE_API + '/get_accidents_by_sensor_last_n')
-                accident_data = response.json()
+            data = {'lta_camera_id ': camera_id, 'n': 10}
+            traffic_flow_data = db.get_traffic_flow_by_sensor_last_n(data)
         except Exception as e:
             logger.info(f'Error retrieving traffic flow data for recommendations due to {e}')
             return {'success': False, 'message': f'Error retrieving traffic flow data for recommendations: {e}'}
         
         data[int(camera_id)] = {
             'traffic_flow': traffic_flow_data,
-            'accidents': accident_data
+            'accidents': None
         }
-    return data 
 
     logger.info('Sending data to retrieve recommendations.')
     try:
         async with AsyncClient() as client:
-            response = await client.post("http://predictive-service/analyze", json=data)
+            response = await client.post("http://predictive-service/analyze", json=data)  # TODO: Change to actual service deets
             return response.json()
     except Exception as e:
         logger.info(f'Error retrieving planning recommendations due to {e}')

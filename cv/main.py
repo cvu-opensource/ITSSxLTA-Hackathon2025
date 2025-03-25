@@ -153,7 +153,7 @@ async def watcher(interval=60, wait=20):
             # Post processing
             camera_data = await retrieve_camera_data(frame_buffer)
             frame_buffer, results = await process_images(frame_buffer)
-            await send_traffic_data(camera_data, frame_buffer, results)
+            await send_traffic_data(camera_data, frame_buffer.copy(), results)
 
             # Reset variables
             count = 0
