@@ -49,7 +49,7 @@ echo ===== Test recommendations =====
 
 echo.
 echo 1. Test get_recommendations
-curl -X POST "%BACKEND_URL%/get_recommendations?query=%5B%22TPE%22%2C%20%22KPE%22%2C%20%22PIE%22%5D"
+curl -X POST "%BACKEND_URL%/get_recommendations"
 echo.
 
 echo.

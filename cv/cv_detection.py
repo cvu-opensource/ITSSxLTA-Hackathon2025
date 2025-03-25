@@ -113,8 +113,8 @@ class CVDetector:
             Results [dict]: Dictionary of {lta_camera_id : [{'total': 1, cls: 1, ...}, ...], ...}
         """
         if not images:
-            self.logger.info('Error: No images passed into vehicle detector.')
-            return
+            self.logger.error('Error: No images passed into vehicle detector.')
+            return images, {}
 
         self.logger.info('Running CV processing...')
         results = {}
@@ -165,7 +165,7 @@ class CVDetector:
 
                 prev_frame = frame
                 
-        self.logger.info(f'Completed vehicle detection. {results}')
+        self.logger.info('Completed vehicle detection.')
         return images, results 
     
     def display_optical_flow(self, prev_frame, flow, mag, ang):

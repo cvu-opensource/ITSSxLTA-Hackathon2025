@@ -1,8 +1,9 @@
-from supabase import create_client, Client
-import datetime
 import os
+from supabase import create_client
 from dotenv import load_dotenv
+
 load_dotenv()
+
 
 class Database:
     def __init__(self):

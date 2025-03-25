@@ -101,18 +101,27 @@ def process_average_traffic_data(data):
     """
     Given n records of traffic data, compute the average and determine state of the most recent values
     """
+    logger.info(f'data {data}')
     temp = {}
     for datetime, traffic_data in data.items():
         for k, v in traffic_data.items():
             temp[k] = temp.get(k, []) + [float(v)]
 
+    logger.info(f'temp {temp}')
     result = {}
     for statistic in temp:
-        average = round(sum(temp[statistic]) / len(temp[statistic]), 4)
-        result[statistic] = {
-            'average': average,
-            'relative': round(temp[statistic][-1] / average, 2)
-        }
+        if len(temp[statistic]) > 0:
+            average = sum(temp[statistic]) / len(temp[statistic])
+            result[statistic] = {
+                'average': round(average, 6),
+                'relative': round(temp[statistic][-1] / average, 3) if average > 0.0 else 0.0
+            }
+        else:
+            result[statistic] = {
+                'average': 0.0,
+                'relative': 0.0
+            }
+    logger.info(f'result {result}')
     return result
 
 def process_camera_data(camera_data):
@@ -202,7 +211,7 @@ def process_grouped_weather_data(grouped_data, weather_data):
         if rainfall_values:
             grouped_data[area]['average_rainfall'] = round(sum(rainfall_values) / len(rainfall_values), 2)
         else:
-            grouped_data[area]['average_rainfall'] = 0
+            grouped_data[area]['average_rainfall'] = 0.0
     return grouped_data
 
 """
@@ -241,7 +250,9 @@ async def save_traffic_flow(results: dict):
     """
     try:
         logger.info(f'Saving traffic flow data {results}.')
-        db.insert_traffic_flows(results)
+        for camera_id, datas in results.items():
+            for data in datas:
+                db.insert_traffic_flows({camera_id: data})
     except Exception as e:
         logger.error(f'Error connecting to DB service to insert_traffic_flows: {e}')
         return {'success': False, 'message': f'Database insert_traffic_flows service unreachable due to {e}'}
@@ -305,24 +316,24 @@ async def get_all_data():
     
     logger.info('Retrieving image and traffic data.')
     for camera_id in camera_data:
-        result[camera_id] = {'camera_data': camera_data[camera_id]}
+        result[int(camera_id)] = {'camera_data': camera_data[int(camera_id)]}
 
         # Get traffic data per sensor
-        data = {'lta_camera_id': camera_id, 'n': 20}
+        data = {'lta_camera_id': int(camera_id), 'n': 20}
         try:
             traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
 
             # Compute average and relative values for traffic data before sending to UI
-            result[camera_id]['traffic_data'] = process_average_traffic_data(traffic_data)
+            result[int(camera_id)]['traffic_data'] = process_average_traffic_data(traffic_data)
 
         except Exception as e:
             logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
             return {'success': False, 'message': f'Database service unreachable due to {e}'}
     
         # Get latest image data per sensor
-        data = {'lta_camera_id': camera_id}
+        data = {'lta_camera_id': int(camera_id)}
         try:
-            result[camera_id]['image_data'] = db.get_image(data)
+            result[int(camera_id)]['image_data'] = db.get_image(data)
         except Exception as e:
             logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
             return {'success': False, 'message': f'Database service unreachable due to {e}'}
@@ -398,10 +409,11 @@ async def get_live_traffic_updates():
 
 
 @app.post("/get_recommendations")
-async def get_recommendations(areas):
+async def get_recommendations():
     """
     Sends data to the predictive analysis service from db and returns response to UI
     """
+    areas = ['TPE', 'KPE', 'PIE']
     logger.info('Retrieving all sensors from db for recommendations.')
     
     try:
@@ -439,7 +451,7 @@ async def get_recommendations(areas):
                 'accident_data': accident_data
             }
 
-    logger.info('Sending data to retrieve recommendations.')
+    logger.info(f'Sending data to retrieve recommendations. {data}')
     try:
         async with AsyncClient() as client:
             response = await client.post(PLANNING_API + '/get_planning_recommendations', json=data)

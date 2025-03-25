@@ -1,71 +1,1426 @@
 export const markers = {
-  1001: {
-    camera_data: {
-        angle: 90,  // use this
-        description: 'ECP (KPE) - Before KPE Exit',  // use this
-        lat: 1.29531332,  // use this
-        lng: 103.871146,  // use this
-        accident_detected: false  // 'Accident detected' + turn red
-    },
-    traffic_data: {
-        pixel_speed: {
-            average: 0.5,  // 'Current pixel speed'
-            relative: 0.2  // 'Relative pixel speed'
+    "1002": {
+        "camera_data": {
+            "lat": 1.319541067,
+            "long": 103.8785627,
+            "description": "PIE - From changi before KPE Exit",
+            "angle": 270,
         },
-        traffic_density: {
-            average: 100.0,
-            relative: 0.0  // 'Relative traffic density'
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/4ab0ed2e-7ab5-48d7-a04a-bbfcaeae7992.jpg",
+            "height": 240,
+            "width": 320,
+            "accident_detected": false,
         },
-        num_vehicles: {
-            average: 2,  // 'Number of vehicles'
-            relative: 0.02
-        }
     },
-  },
-  1002: {
-    camera_data: {
-        angle: 270,  // use this
-        description: 'PIE - From changi before KPE Exit',  // use this
-        lat: 1.319541067,  // use this
-        lng: 103.8785627,  // use this
-        accident_detected: true  // 'Accident detected' + turn red
-    },
-    traffic_data: {
-        pixel_speed: {
-            average: 0.9,  // 'Current pixel speed'
-            relative: 1.2  // 'Relative pixel speed'
+    "1003": {
+        "camera_data": {
+            "lat": 1.323957439,
+            "long": 103.8728576,
+            "description": "PIE - Towards Changi before KPE Exit",
+            "angle": 135,
         },
-        traffic_density: {
-            average: 200.0,
-            relative: 2.3  // 'Relative traffic density'
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/e5df4beb-962f-4691-809e-4ba8a38ace46.jpg",
+            "height": 240,
+            "width": 320,
+            "accident_detected": false,
         },
-        num_vehicles: {
-            average: 80,  // 'Number of vehicles'
-            relative: 2.0
-        }
     },
-  },
-  1003: {
-    camera_data: {
-        angle: 135,  // use this
-        description: 'PIE - Towards Changi before KPE Exit',  // use this
-        lat: 1.323957439,  // use this
-        lng: 103.8728576,  // use this
-        accident_detected: true  // 'Accident detected' + turn red
-    },
-    traffic_data: {
-        pixel_speed: {
-            average: 1.9,  // 'Current pixel speed'
-            relative: 0.9  // 'Relative pixel speed'
+    "1004": {
+        "camera_data": {
+            "lat": 1.319535712,
+            "long": 103.8750668,
+            "description": "PIE - Towards Tuas",
+            "angle": 15,
         },
-        traffic_density: {
-            average: 167.0,
-            relative: 1.1  // 'Relative traffic density'
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/657381a6-bed3-484a-9fad-eae9e6dc361a.jpg",
+            "height": 240,
+            "width": 320,
+            "accident_detected": false,
         },
-        num_vehicles: {
-            average: 46,  // 'Number of vehicles'
-            relative: 1.0
-        }
     },
-  },
-};
+    "1005": {
+        "camera_data": {
+            "lat": 1.363519886,
+            "long": 103.905394,
+            "description": "KPE - Towards ECP after Tampines Road",
+            "angle": 30,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/f31cd719-16e8-454e-8d8c-2ceab758e57b.jpg",
+            "height": 240,
+            "width": 320,
+            "accident_detected": false,
+        },
+    },
+    "1006": {
+        "camera_data": {
+            "lat": 1.357098686,
+            "long": 103.902042,
+            "description": "KPE - Towards ECP near Defu Lane",
+            "angle": 200,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/ec1ff96e-f758-4b01-8de9-19b68d475433.jpg",
+            "height": 240,
+            "width": 320,
+            "accident_detected": false,
+        },
+    },
+    "1111": {
+        "camera_data": {
+            "lat": 1.365434,
+            "long": 103.953997,
+            "description": "TPE(PIE) - Exit 2 to Loyang Ave",
+            "angle": 95,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/f11bfd6a-90ad-46c6-8886-265b2b890dd1.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "1112": {
+        "camera_data": {
+            "lat": 1.3605,
+            "long": 103.961412,
+            "description": "TPE(PIE) - Tampines Viaduct",
+            "angle": 45,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/a8476924-0cca-43a3-923e-93c4ec7ab624.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "1113": {
+        "camera_data": {
+            "lat": 1.317036,
+            "long": 103.988598,
+            "description": "Tanah Merah Coast Road towards Changi",
+            "angle": 110,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/58c81718-dda4-43c6-99d2-e8db57bfccf8.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "1501": {
+        "camera_data": {
+            "lat": 1.27414394350065,
+            "long": 103.851316802547,
+            "description": "MCE - Towards ECP from Straits Blvd",
+            "angle": 290,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/7c65b5b8-42ac-49b2-9e79-8913ee9e02de.jpg",
+            "height": 240,
+            "width": 320,
+            "accident_detected": false,
+        },
+    },
+    "1502": {
+        "camera_data": {
+            "lat": 1.27135090682664,
+            "long": 103.861828440597,
+            "description": "MCE - Entrance from Marina Coastal Drive",
+            "angle": 45,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/4bfb87e2-4103-4a2a-8154-e642b177a4a9.jpg",
+            "height": 240,
+            "width": 320,
+            "accident_detected": false,
+        },
+    },
+    "1503": {
+        "camera_data": {
+            "lat": 1.27066408655104,
+            "long": 103.856977943394,
+            "description": "MCE - Towards AYE at ERP 91",
+            "angle": 315,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/db088700-a07b-41fa-966d-15ce8d5c482c.jpg",
+            "height": 240,
+            "width": 320,
+            "accident_detected": false,
+        },
+    },
+    "1504": {
+        "camera_data": {
+            "lat": 1.29409891409364,
+            "long": 103.876056196568,
+            "description": "MCE - Entrance from ECP",
+            "angle": 30,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/9e656e94-e0d8-4233-938a-14b30cadcd38.jpg",
+            "height": 240,
+            "width": 320,
+            "accident_detected": false,
+        },
+    },
+    "1505": {
+        "camera_data": {
+            "lat": 1.2752977149006,
+            "long": 103.866390381759,
+            "description": "MCE - Entrance from Marina Blvd",
+            "angle": 225,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/ebcc857a-1e87-4b06-948c-11521c2e0759.jpg",
+            "height": 240,
+            "width": 320,
+            "accident_detected": false,
+        },
+    },
+    "1701": {
+        "camera_data": {
+            "lat": 1.323604823,
+            "long": 103.8587802,
+            "description": "CTE (AYE) - Moulmein Flyover LP448F",
+            "angle": 0,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/9fd69bb1-c34d-4f52-9cd9-3e91a82ce27e.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "1702": {
+        "camera_data": {
+            "lat": 1.34355015,
+            "long": 103.8601984,
+            "description": "CTE (AYE) - Braddell Flyover LP274F",
+            "angle": 0,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/8ad3e08f-60c7-4bfc-94a3-88d5ddfcf777.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "1703": {
+        "camera_data": {
+            "lat": 1.32814722194857,
+            "long": 103.862203282048,
+            "description": "CTE (SLE) - Blk 22 St George's Road",
+            "angle": 0,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/5e878030-fcf7-4c6c-905d-1a0805423fe6.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "1704": {
+        "camera_data": {
+            "lat": 1.28569398886979,
+            "long": 103.837524510188,
+            "description": "CTE (AYE) - Entrance from Chin Swee Road",
+            "angle": 50,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/2018773f-6fc4-43e1-86f1-cbbc70395ce2.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "1705": {
+        "camera_data": {
+            "lat": 1.375925022,
+            "long": 103.8587986,
+            "description": "CTE (AYE) - Ang Mo Kio Ave 5 Flyover ",
+            "angle": 330,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/6f68a057-970c-44bd-9ec7-01ce82e12673.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "1706": {
+        "camera_data": {
+            "lat": 1.38861,
+            "long": 103.85806,
+            "description": "CTE (AYE) - Yio Chu Kang Flyover ",
+            "angle": 0,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/15cdfcbd-f25c-4181-8e96-2fba0c7e1f07.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "1707": {
+        "camera_data": {
+            "lat": 1.28036584335876,
+            "long": 103.830451146503,
+            "description": "CTE (AYE) - Bukit Merah Flyover ",
+            "angle": 225,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/ea140c8b-f967-4d9d-9d5f-fa582d859474.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "1709": {
+        "camera_data": {
+            "lat": 1.31384231654635,
+            "long": 103.845603032574,
+            "description": "CTE (AYE) - Exit 6 to Bukit Timah Road",
+            "angle": 225,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/c887baa6-20e7-4bc4-86b6-e40b90da689a.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "1711": {
+        "camera_data": {
+            "lat": 1.35296,
+            "long": 103.85719,
+            "description": "CTE (AYE) - Ang Mo Kio Flyover",
+            "angle": 180,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/0508552d-00bf-48a1-bffa-24ddee57aeb4.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "2701": {
+        "camera_data": {
+            "lat": 1.447023728,
+            "long": 103.7716543,
+            "description": "Woodlands Causeway (Towards Johor)",
+            "angle": 315,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/5e199f4d-be0f-4a3f-aa7c-5817b0beccaa.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "2702": {
+        "camera_data": {
+            "lat": 1.445554109,
+            "long": 103.7683397,
+            "description": "Woodlands Checkpoint",
+            "angle": 190,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/85828b2a-2f65-48b6-b796-a7a031cebc9e.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "2703": {
+        "camera_data": {
+            "lat": 1.35047790791386,
+            "long": 103.791033581325,
+            "description": "BKE (PIE) - Chantek F/O",
+            "angle": 330,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/984240c3-cd12-4719-9eae-ea862fd562bd.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "2704": {
+        "camera_data": {
+            "lat": 1.429588536,
+            "long": 103.769311,
+            "description": "BKE (Woodlands Checkpoint) - Woodlands F/O",
+            "angle": 325,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/ccdefd6d-beb5-41c5-a873-10ed0d32e9ea.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "2705": {
+        "camera_data": {
+            "lat": 1.36728572,
+            "long": 103.7794698,
+            "description": "BKE (PIE) - Dairy Farm F/O",
+            "angle": 175,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/b1df5f0d-1abd-4772-9bab-afb47163f281.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "2706": {
+        "camera_data": {
+            "lat": 1.414142,
+            "long": 103.771168,
+            "description": "Entrance from Mandai Rd (Towards Checkpoint)",
+            "angle": 0,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/6ed1ea78-a9ff-4829-9908-45d5cf31fd3b.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "2707": {
+        "camera_data": {
+            "lat": 1.3983,
+            "long": 103.774247,
+            "description": "Exit 5 to KJE (towards PIE)",
+            "angle": 315,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/fe4bb60e-62c1-4bf3-bdda-5d0fb51fb692.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "2708": {
+        "camera_data": {
+            "lat": 1.3865,
+            "long": 103.7747,
+            "description": "Exit 5 to KJE (Towards Checkpoint)",
+            "angle": 350,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/d0884b33-f88e-414b-bf29-97eeba0828c6.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "3702": {
+        "camera_data": {
+            "lat": 1.33831,
+            "long": 103.98032,
+            "description": "ECP (Changi) - Entrance from PIE",
+            "angle": 30,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/9b760c88-3578-48b2-aa93-1049dd907baf.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "3704": {
+        "camera_data": {
+            "lat": 1.2958550156561,
+            "long": 103.880314665981,
+            "description": "ECP (Changi) - Entrance from KPE",
+            "angle": 225,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/4acf1096-c597-490f-b1ae-f3bd3110496d.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "3705": {
+        "camera_data": {
+            "lat": 1.32743,
+            "long": 103.97383,
+            "description": "ECP (AYE) - Exit 2A to Changi Coast Road",
+            "angle": 245,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/1fe5d8dd-2168-4659-87ee-214efabc230f.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "3793": {
+        "camera_data": {
+            "lat": 1.309330837,
+            "long": 103.9350504,
+            "description": "ECP (Changi) - Laguna Flyover",
+            "angle": 90,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/33a5706c-01b6-4e96-bcbe-eb7b5e1e7f65.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "3795": {
+        "camera_data": {
+            "lat": 1.30145145166066,
+            "long": 103.910596320237,
+            "description": "ECP (City) - Marine Parade F/O",
+            "angle": 55,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/2f57be0e-4820-44b6-8306-fae1f9b17ae6.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "3796": {
+        "camera_data": {
+            "lat": 1.297512569,
+            "long": 103.8983019,
+            "description": "ECP (Changi) - Tanjong Katong F/O",
+            "angle": 55,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/a5ed8c1f-4692-4137-917a-91263109d94f.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "3797": {
+        "camera_data": {
+            "lat": 1.29565733262976,
+            "long": 103.885283049309,
+            "description": "ECP (City) - Tanjung Rhu",
+            "angle": 315,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/7726f05f-9af4-4c6d-9e77-fecd0f8f0e3d.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "3798": {
+        "camera_data": {
+            "lat": 1.29158484,
+            "long": 103.8615987,
+            "description": "ECP (Changi) - Benjamin Sheares Bridge",
+            "angle": 30,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/e349b5f2-61d2-4169-8073-3308e6928598.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4701": {
+        "camera_data": {
+            "lat": 1.2871,
+            "long": 103.79633,
+            "description": "AYE (City) - Alexander Road Exit",
+            "angle": 135,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/820e7865-7103-4e10-98f5-3bdbd3dc90c0.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4702": {
+        "camera_data": {
+            "lat": 1.27237,
+            "long": 103.8324,
+            "description": "AYE (Jurong) - Keppel Viaduct",
+            "angle": 305,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/75c742c1-fee8-40c5-b04e-ba00c58d8635.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4703": {
+        "camera_data": {
+            "lat": 1.348697862,
+            "long": 103.6350413,
+            "description": "Tuas Second Link",
+            "angle": 0,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/80770cb8-f5fa-438e-9230-6496529cc38a.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4704": {
+        "camera_data": {
+            "lat": 1.27877,
+            "long": 103.82375,
+            "description": "AYE (CTE) - Lower Delta Road F/O",
+            "angle": 105,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/548e3136-78e7-4a01-a6f6-caa7ed30c14a.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4705": {
+        "camera_data": {
+            "lat": 1.32618,
+            "long": 103.73028,
+            "description": "AYE (MCE) - Entrance from Yuan Ching Rd",
+            "angle": 135,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/8627a8dd-8ac9-46a5-b7b5-924d3bdf8998.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4706": {
+        "camera_data": {
+            "lat": 1.29792,
+            "long": 103.78205,
+            "description": "AYE (Jurong) - NUS Sch of Computing TID",
+            "angle": 305,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/9c8aba86-1af2-4c59-af03-89235c1afe5d.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4707": {
+        "camera_data": {
+            "lat": 1.33344648135658,
+            "long": 103.652700847056,
+            "description": "AYE (MCE) - Entrance from Jln Ahmad Ibrahim",
+            "angle": 135,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/c34f8f43-0552-4503-913c-9c3ed957e1d7.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4708": {
+        "camera_data": {
+            "lat": 1.29939,
+            "long": 103.7799,
+            "description": "AYE (CTE) - ITE College West Dover TID",
+            "angle": 120,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/78c3604c-6fe6-4c85-bbbf-ea391ceb3336.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4709": {
+        "camera_data": {
+            "lat": 1.312019,
+            "long": 103.763002,
+            "description": "Clementi Ave 6 Entrance",
+            "angle": 270,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/847d116f-b330-4624-8080-11681b2e13c3.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4710": {
+        "camera_data": {
+            "lat": 1.32153,
+            "long": 103.75273,
+            "description": "AYE(Tuas) - Pandan Garden",
+            "angle": 285,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/02019b41-e2b0-45d5-8b3e-9db6fb3112b1.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4712": {
+        "camera_data": {
+            "lat": 1.341244001,
+            "long": 103.6439134,
+            "description": "AYE(Tuas) - Tuas Ave 8 Exit",
+            "angle": 345,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/89df4729-d4ce-4d70-89d1-795ab56b56da.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4713": {
+        "camera_data": {
+            "lat": 1.347645829,
+            "long": 103.6366955,
+            "description": "Tuas Checkpoint",
+            "angle": 135,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/be14cd36-6f13-4da2-8bc8-d90cf01ab80f.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4714": {
+        "camera_data": {
+            "lat": 1.31023,
+            "long": 103.76438,
+            "description": "AYE (Tuas) - Near West Coast Walk",
+            "angle": 315,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/4ce0788f-08b6-4423-b246-c68633f25806.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4716": {
+        "camera_data": {
+            "lat": 1.32227,
+            "long": 103.67453,
+            "description": "AYE (Tuas) - Entrance from Benoi Rd",
+            "angle": 265,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/d83646c6-3a4f-409b-b3fa-78a459500ec9.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4798": {
+        "camera_data": {
+            "lat": 1.25999999687243,
+            "long": 103.823611110166,
+            "description": "Sentosa Tower 1",
+            "angle": 180,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/5e494bb0-64f7-45de-8400-318531ad7454.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "4799": {
+        "camera_data": {
+            "lat": 1.26027777363278,
+            "long": 103.823888890049,
+            "description": "Sentosa Tower 2",
+            "angle": 0,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/f3e8e638-015f-4338-9c11-94bcdcc080d6.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "5794": {
+        "camera_data": {
+            "lat": 1.3309693,
+            "long": 103.9168616,
+            "description": "PIEE (Jurong) - Bedok North",
+            "angle": 260,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/e92ba392-9326-438d-b159-870456138801.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "5795": {
+        "camera_data": {
+            "lat": 1.326024822,
+            "long": 103.905625,
+            "description": "PIEE (Jurong) - Eunos F/O",
+            "angle": 45,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/9b52c351-ee05-4b2f-b511-4f167167e77e.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "5797": {
+        "camera_data": {
+            "lat": 1.322875288,
+            "long": 103.8910793,
+            "description": "PIEE (Jurong) - Paya Lebar F/O",
+            "angle": 270,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/c878c98d-394b-4a08-b5fb-aacb54d448ee.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "5798": {
+        "camera_data": {
+            "lat": 1.32036078126842,
+            "long": 103.877174116489,
+            "description": "PIEE (Jurong) - Kallang Sims Drive Blk 62",
+            "angle": 270,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/5ab9c539-196a-4f1a-a024-4fb46c7eb5f9.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "5799": {
+        "camera_data": {
+            "lat": 1.328171608,
+            "long": 103.8685191,
+            "description": "PIEE (Changi) - Woodsville F/O",
+            "angle": 225,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/fbecadc5-c41c-49da-8f80-60639ebd7f01.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6701": {
+        "camera_data": {
+            "lat": 1.329334,
+            "long": 103.858222,
+            "description": "PIEW (Changi) - Blk 65A Jln Tenteram, Kim Keat",
+            "angle": 75,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/3d26b439-5c85-434b-ba85-4b66fc8dcbf9.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6703": {
+        "camera_data": {
+            "lat": 1.328899,
+            "long": 103.84121,
+            "description": "PIEW (Changi) - Blk 173 Toa Payoh Lorong 1",
+            "angle": 260,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/a208fdf3-eb2c-4861-8b91-7b70c2c2889f.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6704": {
+        "camera_data": {
+            "lat": 1.32657403632366,
+            "long": 103.826857295633,
+            "description": "PIEW (Jurong) - Mt Pleasant F/O",
+            "angle": 285,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/c0b3fcdd-f1c2-403c-906c-3b087aa117de.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6705": {
+        "camera_data": {
+            "lat": 1.332124,
+            "long": 103.81768,
+            "description": "PIEW (Changi) - Adam F/O Special pole",
+            "angle": 250,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/e1bffc81-7afd-4ef9-a3ec-45ccab4cf174.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6706": {
+        "camera_data": {
+            "lat": 1.349428893,
+            "long": 103.7952799,
+            "description": "PIEW (Changi) - BKE",
+            "angle": 120,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/ecc9ed23-871c-493c-a03f-d61f52115913.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6708": {
+        "camera_data": {
+            "lat": 1.345996,
+            "long": 103.69016,
+            "description": "Nanyang Flyover (Towards Changi)",
+            "angle": 55,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/b0a9b0c1-2967-490c-80b9-d7d64ff62fb2.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6710": {
+        "camera_data": {
+            "lat": 1.344205,
+            "long": 103.78577,
+            "description": "Entrance from Jln Anak Bukit (Towards Changi)",
+            "angle": 195,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/aa87a838-1c8b-4b90-8cbf-ffb2fe8a014d.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6711": {
+        "camera_data": {
+            "lat": 1.33771,
+            "long": 103.977827,
+            "description": "Entrance from ECP (Towards Jurong)",
+            "angle": 285,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/ce1af818-b147-43d4-931d-d97727a5c487.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6712": {
+        "camera_data": {
+            "lat": 1.332691,
+            "long": 103.770278,
+            "description": "Exit 27 to Clementi Ave 6",
+            "angle": 270,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/7f6d3b4c-987e-4f53-b45d-03df691dfcb5.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6713": {
+        "camera_data": {
+            "lat": 1.340298,
+            "long": 103.945652,
+            "description": "Entrance From Simei Ave (Towards Jurong)",
+            "angle": 225,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/9bce31c2-c85a-4901-a165-03885c921caf.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6715": {
+        "camera_data": {
+            "lat": 1.356299,
+            "long": 103.716071,
+            "description": "Hong Kah Flyover (Towards Jurong)",
+            "angle": 290,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/bde718f8-caae-4db4-bbd3-39d5113fbe11.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "6716": {
+        "camera_data": {
+            "lat": 1.322893,
+            "long": 103.6635051,
+            "description": "AYE Flyover",
+            "angle": 40,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/d0b8cff1-f3b7-4bf2-9be3-3115ba1f5e58.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "7791": {
+        "camera_data": {
+            "lat": 1.354245,
+            "long": 103.963782,
+            "description": "TPE (PIE) - Upper Changi F/O",
+            "angle": 325,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/9b754222-1fb1-4914-b333-b2fda9312175.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "7793": {
+        "camera_data": {
+            "lat": 1.37704704,
+            "long": 103.92946983,
+            "description": "TPE(PIE) - Entrance to PIE from Tampines Ave 10",
+            "angle": 270,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/2422ebba-15dd-45f4-9b79-b069cdf1b846.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "7794": {
+        "camera_data": {
+            "lat": 1.37988658,
+            "long": 103.92009174,
+            "description": "TPE(SLE) - TPE Exit KPE",
+            "angle": 135,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/8de5a74c-3c58-4b81-b1c0-54919b8a0e9a.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "7796": {
+        "camera_data": {
+            "lat": 1.39559294,
+            "long": 103.90515712,
+            "description": "TPE(SLE) - On rooflp of Blk 189A Rivervale Drive 9",
+            "angle": 135,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/8c1b8a38-793a-4cb8-88a1-3af55269028f.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "7797": {
+        "camera_data": {
+            "lat": 1.40002575,
+            "long": 103.85702534,
+            "description": "TPE(PIE) - Seletar Flyover",
+            "angle": 80,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/f940a5c8-3da8-4077-a8e8-f31f0698baef.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "7798": {
+        "camera_data": {
+            "lat": 1.39748842,
+            "long": 103.85400467,
+            "description": "TPE(SLE) - LP790F (On SLE Flyover)",
+            "angle": 260,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/9f70b22d-7da6-4296-8225-49eb6c53cf1a.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "8701": {
+        "camera_data": {
+            "lat": 1.38647,
+            "long": 103.74143,
+            "description": "KJE (PIE) - Choa Chu Kang West Flyover",
+            "angle": 45,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/1bc8ce80-99c7-4ffd-91a4-b43706a47aab.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "8702": {
+        "camera_data": {
+            "lat": 1.39059,
+            "long": 103.7717,
+            "description": "KJE (BKE) - Exit To BKE",
+            "angle": 95,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/5a4cdd2e-4370-43bf-bf2b-7f1fb98fb2a9.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "8704": {
+        "camera_data": {
+            "lat": 1.3899,
+            "long": 103.74843,
+            "description": "KJE (BKE) - Entrance From Choa Chu Kang Dr",
+            "angle": 85,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/125d2e7d-195d-4869-8f2f-426914996bee.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "8706": {
+        "camera_data": {
+            "lat": 1.3664,
+            "long": 103.70899,
+            "description": "KJE (BKE) - Tengah Flyover",
+            "angle": 55,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/c178b32d-ef74-4deb-a432-9f51639268e7.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "9701": {
+        "camera_data": {
+            "lat": 1.39466333,
+            "long": 103.83474601,
+            "description": "SLE (TPE) - Lentor F/O",
+            "angle": 85,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/d4b7bf4c-e314-445d-974f-9e8f7d24719c.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "9702": {
+        "camera_data": {
+            "lat": 1.39474081,
+            "long": 103.81797086,
+            "description": "SLE(TPE) - Thomson Flyover",
+            "angle": 135,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/b3667225-f682-4fdd-9fa3-ebf07ee60e6b.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "9703": {
+        "camera_data": {
+            "lat": 1.422857,
+            "long": 103.773005,
+            "description": "SLE(Woodlands) - Woodlands South Flyover",
+            "angle": 25,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/cf6eaf9f-475d-4844-b587-2d48c9b46e8a.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "9704": {
+        "camera_data": {
+            "lat": 1.42214311,
+            "long": 103.79542062,
+            "description": "SLE(TPE) - Ulu Sembawang Flyover",
+            "angle": 75,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/156b96ab-8da3-42f1-b72f-e2bae5b4316a.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "9705": {
+        "camera_data": {
+            "lat": 1.42627712,
+            "long": 103.78716637,
+            "description": "SLE(TPE) - Beside Slip Road From Woodland Ave 2",
+            "angle": 270,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/f96edb49-e6e5-491d-8167-69336c889e8d.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "9706": {
+        "camera_data": {
+            "lat": 1.41270056,
+            "long": 103.80642712,
+            "description": "SLE(Woodlands) - Mandai Lake Flyover",
+            "angle": 345,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-25T00:20:44",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/bd4f77cf-bf56-4c22-aedd-1f1280b94c3d.jpg",
+            "height": 1080,
+            "width": 1920,
+            "accident_detected": false,
+        },
+    },
+    "7795": {
+        "camera_data": {
+            "lat": 1.38432741,
+            "long": 103.91585701,
+            "description": "TPE(PIE) - Entrance from Tampines FO",
+            "angle": 315,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-24T23:15:42",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/4abac97f-88d2-439b-93cc-aa177a76be37.jpg",
+            "height": 288,
+            "width": 352,
+            "accident_detected": false,
+        },
+    },
+    "6714": {
+        "camera_data": {
+            "lat": 1.361742,
+            "long": 103.703341,
+            "description": "Exit 35 to KJE (Towards Changi)",
+            "angle": 0,
+        },
+        "traffic_data": {},
+        "image_data": {
+            "datetime": "2025-03-24T22:46:01",
+            "image_link": "https://images.data.gov.sg/api/traffic-images/2025/03/1ded16f9-d5f4-4b9a-94f5-5729e7ca9110.jpg",
+            "height": 288,
+            "width": 352,
+            "accident_detected": false,
+        },
+    },
+}
