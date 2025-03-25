@@ -34,7 +34,7 @@
              #mynetwork {
                  width: 100%;
                  height: 600px;
-                 background-color: #ffffff;
+                 background-color: #aab7b8;
                  border: 1px solid lightgray;
                  position: relative;
                  float: left;
@@ -88,8 +88,8 @@
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "1125-Traffic Hazard", "label": "1125-Traffic Hazard", "shape": "dot"}, {"color": "#97c2fc", "id": "1183-Trfc Collision-Unkn Inj", "label": "1183-Trfc Collision-Unkn Inj", "shape": "dot"}, {"color": "#97c2fc", "id": "1182-Trfc Collision-No Inj", "label": "1182-Trfc Collision-No Inj", "shape": "dot"}, {"color": "#97c2fc", "id": "1179-Trfc Collision-1141 Enrt", "label": "1179-Trfc Collision-1141 Enrt", "shape": "dot"}, {"color": "#97c2fc", "id": "20002-Hit and Run No Injuries", "label": "20002-Hit and Run No Injuries", "shape": "dot"}, {"color": "#97c2fc", "id": "FIRE-Report of Fire", "label": "FIRE-Report of Fire", "shape": "dot"}, {"color": "#97c2fc", "id": "1125A-Animal Hazard", "label": "1125A-Animal Hazard", "shape": "dot"}, {"color": "#97c2fc", "id": "CZP-Assist with Construction", "label": "CZP-Assist with Construction", "shape": "dot"}, {"color": "#97c2fc", "id": "weekday", "label": "weekday", "shape": "dot"}, {"color": "#97c2fc", "id": "event_days", "label": "event_days", "shape": "dot"}, {"color": "#97c2fc", "id": "vis", "label": "vis", "shape": "dot"}, {"color": "#97c2fc", "id": "surface", "label": "surface", "shape": "dot"}, {"color": "#97c2fc", "id": "terrain", "label": "terrain", "shape": "dot"}, {"color": "#97c2fc", "id": "width", "label": "width", "shape": "dot"}, {"color": "#97c2fc", "id": "weather", "label": "weather", "shape": "dot"}, {"color": "#97c2fc", "id": "flow", "label": "flow", "shape": "dot"}, {"color": "#97c2fc", "id": "occupancy", "label": "occupancy", "shape": "dot"}, {"color": "#97c2fc", "id": "speed", "label": "speed", "shape": "dot"}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "weekday", "to": "weekday"}, {"arrows": "to", "from": "event_days", "to": "terrain"}, {"arrows": "to", "from": "event_days", "to": "width"}, {"arrows": "to", "from": "vis", "to": "weather"}, {"arrows": "to", "from": "weather", "to": "weather"}, {"arrows": "to", "from": "weekday", "to": "vis"}, {"arrows": "to", "from": "event_days", "to": "occupancy"}, {"arrows": "to", "from": "weekday", "to": "surface"}, {"arrows": "to", "from": "weather", "to": "flow"}, {"arrows": "to", "from": "1183-Trfc Collision-Unkn Inj", "to": "occupancy"}, {"arrows": "to", "from": "vis", "to": "flow"}, {"arrows": "to", "from": "1179-Trfc Collision-1141 Enrt", "to": "occupancy"}, {"arrows": "to", "from": "surface", "to": "surface"}, {"arrows": "to", "from": "weekday", "to": "event_days"}, {"arrows": "to", "from": "event_days", "to": "weather"}, {"arrows": "to", "from": "CZP-Assist with Construction", "to": "occupancy"}, {"arrows": "to", "from": "event_days", "to": "flow"}, {"arrows": "to", "from": "1125A-Animal Hazard", "to": "occupancy"}, {"arrows": "to", "from": "weekday", "to": "terrain"}, {"arrows": "to", "from": "weekday", "to": "width"}, {"arrows": "to", "from": "weekday", "to": "occupancy"}, {"arrows": "to", "from": "1183-Trfc Collision-Unkn Inj", "to": "flow"}, {"arrows": "to", "from": "1125-Traffic Hazard", "to": "occupancy"}, {"arrows": "to", "from": "1179-Trfc Collision-1141 Enrt", "to": "flow"}, {"arrows": "to", "from": "width", "to": "width"}, {"arrows": "to", "from": "surface", "to": "terrain"}, {"arrows": "to", "from": "surface", "to": "width"}, {"arrows": "to", "from": "terrain", "to": "terrain"}, {"arrows": "to", "from": "terrain", "to": "width"}, {"arrows": "to", "from": "surface", "to": "occupancy"}, {"arrows": "to", "from": "terrain", "to": "occupancy"}, {"arrows": "to", "from": "width", "to": "occupancy"}, {"arrows": "to", "from": "FIRE-Report of Fire", "to": "occupancy"}, {"arrows": "to", "from": "1182-Trfc Collision-No Inj", "to": "occupancy"}, {"arrows": "to", "from": "vis", "to": "surface"}, {"arrows": "to", "from": "vis", "to": "vis"}, {"arrows": "to", "from": "weekday", "to": "weather"}, {"arrows": "to", "from": "CZP-Assist with Construction", "to": "flow"}, {"arrows": "to", "from": "1125A-Animal Hazard", "to": "flow"}, {"arrows": "to", "from": "width", "to": "weather"}, {"arrows": "to", "from": "weekday", "to": "flow"}, {"arrows": "to", "from": "20002-Hit and Run No Injuries", "to": "occupancy"}, {"arrows": "to", "from": "surface", "to": "weather"}, {"arrows": "to", "from": "1125-Traffic Hazard", "to": "flow"}, {"arrows": "to", "from": "terrain", "to": "weather"}, {"arrows": "to", "from": "event_days", "to": "vis"}, {"arrows": "to", "from": "width", "to": "flow"}, {"arrows": "to", "from": "event_days", "to": "surface"}, {"arrows": "to", "from": "surface", "to": "flow"}, {"arrows": "to", "from": "terrain", "to": "flow"}, {"arrows": "to", "from": "FIRE-Report of Fire", "to": "flow"}, {"arrows": "to", "from": "event_days", "to": "event_days"}, {"arrows": "to", "from": "1182-Trfc Collision-No Inj", "to": "flow"}, {"arrows": "to", "from": "vis", "to": "width"}, {"arrows": "to", "from": "weather", "to": "occupancy"}, {"arrows": "to", "from": "vis", "to": "occupancy"}, {"arrows": "to", "from": "vis", "to": "terrain"}, {"arrows": "to", "from": "20002-Hit and Run No Injuries", "to": "flow"}]);
+                  nodes = new vis.DataSet([]);
+                  edges = new vis.DataSet([]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -118,6 +118,19 @@
         "hideEdgesOnDrag": false,
         "hideNodesOnDrag": false
     },
+    "layout": {
+        "hierarchical": {
+            "blockShifting": true,
+            "edgeMinimization": true,
+            "enabled": true,
+            "levelSeparation": 150,
+            "parentCentralization": true,
+            "sortMethod": "hubsize",
+            "treeSpacing": 200
+        },
+        "improvedLayout": true,
+        "randomSeed": 0
+    },
     "physics": {
         "enabled": true,
         "stabilization": {
@@ -137,6 +150,8 @@
 
                   network = new vis.Network(container, data, options);
 
+                  
+                    network.on("click", neighbourhoodHighlight);
                   
 
                   
