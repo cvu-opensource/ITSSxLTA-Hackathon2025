@@ -7,7 +7,7 @@ load_dotenv()
 class Database:
     def __init__(self):
         self.url = os.environ.get("SUPABASE_API")
-        self.key = os.environ.get("SUPABASE_KEY")
+        self.key = os.environ.get("SUPABASE_API_KEY")
         self.supabase = create_client(self.url, self.key)
 
     ## CAMERA
@@ -53,7 +53,8 @@ class Database:
         response = self.supabase.rpc('get_all_cameras').execute()
         temp = {}
         for i in response.data:
-            temp[i['lta_camera_id']] = i
+            lta_camera_id = i.pop('lta_camera_id')
+            temp[lta_camera_id] = i
         return temp
 
     ## IMAGE
@@ -147,6 +148,7 @@ class Database:
         ).execute()
 
         temp = {}
-        for i in response.data:
-            temp[i['datetime']] = i
+        for i in response.data[:dct['n']]:
+            timestamp = i.pop('datetime')
+            temp[timestamp] = i
         return temp

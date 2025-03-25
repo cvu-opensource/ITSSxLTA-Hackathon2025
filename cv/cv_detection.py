@@ -29,9 +29,9 @@ class CVDetector:
             raise ValueError("Error: Classification model checkpoint is not set in the environment variables.")
         self.classification_model = AutoModelForImageClassification.from_pretrained(
             classification_model_checkpoint,
-            num_labels=2
+            # num_labels=2
         )
-        img_size = 224
+        img_size = 384
         img_processor = AutoImageProcessor.from_pretrained(classification_model_checkpoint)
         self._transforms = Compose([
             ToTensor(),
@@ -165,7 +165,7 @@ class CVDetector:
 
                 prev_frame = frame
                 
-        self.logger.info('Completed vehicle detection.')
+        self.logger.info(f'Completed vehicle detection. {results}')
         return images, results 
     
     def display_optical_flow(self, prev_frame, flow, mag, ang):
