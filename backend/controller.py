@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 import asyncio
 from httpx import AsyncClient
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+import requests
 
 # Get some hardcoded values 
-from hardcode import camera_details, camera_mapping
+from hardcode import camera_details, camera_mapping, weather_sensor_mapping
 
 # Initialise DB
 from Database import Database
@@ -76,6 +77,26 @@ async def broadcast(message: str):
 Handles processing of data between different services
 """
 
+def get_weather_sensor_data():
+    """
+    Calls NEA API to get rainfall data across singapore
+    """
+    url = "https://api.data.gov.sg/v1/environment/rainfall"
+    response = requests.get(url).json()
+
+    readings = response['items'][0]['readings']
+    readings = {station['station_id']:station['value'] for station in readings}
+
+    stations = response['metadata']['stations']
+    station_data = {
+        station['id']: {
+            'name': station['name'],
+            'location': (station['location']['latitude'], station['location']['longitude']),
+            'rainfall': readings[station['id']]
+        } for station in stations
+    }
+    return station_data
+
 def process_average_traffic_data(data):
     """
     Given n records of traffic data, compute the average and determine state of the most recent values
@@ -87,10 +108,10 @@ def process_average_traffic_data(data):
 
     result = {}
     for statistic in temp:
-        average = sum(temp[statistic]) / len(temp[statistic])
+        average = round(sum(temp[statistic]) / len(temp[statistic]), 4)
         result[statistic] = {
             'average': average,
-            'relative': temp[statistic][-1] / average
+            'relative': round(temp[statistic][-1] / average, 2)
         }
     return result
 
@@ -100,12 +121,33 @@ def process_camera_data(camera_data):
     """
     for camera_id, data in camera_data.items():
         if camera_id in camera_details:
-            data['angle'] =  camera_details[camera_id]['angle']
-            data['description'] =  camera_details[camera_id]['description']
+            data['angle'] = camera_details[camera_id]['angle']
+            data['description'] = camera_details[camera_id]['description']
         else:
             data['angle'] =  0
             data['description'] = 'Road'
     return camera_data
+
+def calculate_total_relative(statistics):
+    """
+    Calculates the sum of 'average_relative' values for a main key
+    """
+    total = 0
+    for statistic in statistics.values():
+        total += statistic['average_relative']
+    return total
+
+def priority_mapping(statistics):
+    """
+    Custom mapping of relative values to priority level
+    """
+    if len(statistics) > 0:
+        average_relative_value = sum([statistic['average_relative'] for _, statistic in statistics.items()]) / len(statistics)
+        if average_relative_value >= 1.5: 
+            return 'High' 
+        if average_relative_value >= 0.5:
+            return 'Normal' 
+    return 'Low'
 
 def process_grouped_traffic_data(traffic_data):
     """
@@ -121,15 +163,46 @@ def process_grouped_traffic_data(traffic_data):
             if camera_id in traffic_data:
                 data = traffic_data[camera_id]
                 for statistic, value in data.items():
-                    temp[statistic] = temp.get(statistic, []) + [float(value['relative'])]
+                    temp[statistic] = temp.get(statistic, {'average': [], 'relative': []})
+                    temp[statistic]['average'].append(float(value['average']))
+                    temp[statistic]['relative'].append(float(value['relative']))
 
         # Convert extracted relative traffic data per sensor into one averaged value across sensors per mapping
         grouped_data[mapping] = {}
         for statistic in temp:
-            grouped_data[mapping][statistic] = sum(temp[statistic]) / len(temp[statistic])
+            grouped_data[mapping][statistic] = grouped_data[mapping].get(statistic, {})
+            grouped_data[mapping][statistic]['average_average'] = round(sum(temp[statistic]['average']) / len(temp[statistic]['average']), 2)
+            grouped_data[mapping][statistic]['average_relative'] = round(sum(temp[statistic]['relative']) / len(temp[statistic]['relative']), 2)
 
-    # Sort mappings by averaged relative data 
-    logger.info(f'grouped_data {grouped_data}')
+    # Sort mappings by averaged relative data
+    grouped_data = sorted(
+        grouped_data.items(),
+        key=lambda item: calculate_total_relative(item[1]),
+        reverse=True
+    )
+    
+    # Converting back to dictionary and adding priority level
+    grouped_data = {
+        key: {
+            **val,
+            **{'priority': priority_mapping(val)}
+        } for (key, val) in grouped_data
+    }
+    return grouped_data
+
+def process_grouped_weather_data(grouped_data, weather_data):
+    """
+    Given groups of traffic sensors, weather data from different sensors and weather sensor mapping,
+    combine average rainfall into grouped data
+    """
+    for area in grouped_data:
+        rainfall_values = []
+        for weather_sensor in weather_sensor_mapping[area]:
+            rainfall_values.append(weather_data[weather_sensor]['rainfall'])
+        if rainfall_values:
+            grouped_data[area]['average_rainfall'] = round(sum(rainfall_values) / len(rainfall_values), 2)
+        else:
+            grouped_data[area]['average_rainfall'] = 0
     return grouped_data
 
 """
@@ -153,6 +226,7 @@ async def save_cameras(cameras: dict):
         cameras = {
             int(camera_id): data for camera_id, data in cameras.items()
         }
+        cameras = process_camera_data(cameras)
         logger.info('Updating camera data in DB.')
         db.insert_cameras(cameras)
     except Exception as e:
@@ -234,7 +308,7 @@ async def get_all_data():
         result[camera_id] = {'camera_data': camera_data[camera_id]}
 
         # Get traffic data per sensor
-        data = {'lta_camera_id': camera_id, 'n': 10}
+        data = {'lta_camera_id': camera_id, 'n': 20}
         try:
             traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
 
@@ -301,7 +375,7 @@ async def get_live_traffic_updates():
     for camera_id in camera_data:
 
         # Get traffic data per sensor
-        data = {'lta_camera_id': camera_id, 'n': 100}
+        data = {'lta_camera_id': camera_id, 'n': 20}
         try:
             traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
             
@@ -314,43 +388,61 @@ async def get_live_traffic_updates():
         
     logger.info('Grouping traffic data for live traffic updates.')
     result = process_grouped_traffic_data(result)
+
+    logger.info('Getting weather data for live traffic updates.')
+    weather_data = get_weather_sensor_data()
+
+    logger.info('Grouping weather and traffic data for live traffic updates.')
+    result = process_grouped_weather_data(result, weather_data)
     return result
 
 
 @app.post("/get_recommendations")
-async def get_recommendations():
+async def get_recommendations(areas):
     """
-    Sends data to the predictive analysis service from db and returns to UI
+    Sends data to the predictive analysis service from db and returns response to UI
     """
     logger.info('Retrieving all sensors from db for recommendations.')
     
     try:
-        camera_data = db.get_all_cameras()
-        camera_data = process_camera_data(camera_data)
+        camera_datas = db.get_all_cameras()
+        camera_datas = process_camera_data(camera_datas)
     except Exception as e:
         logger.info(f'Error retrieving traffic flow for recommendations data due to {e}')
         return {'success': False, 'message': f'Error retrieving camera data for recommendations: {e}'}
     
+    # Only get data for sensors within specified areas
     data = {}
-    for camera_id in camera_data:
+    for area in areas:
+        for camera_id in camera_mapping[area]:
+            camera_data = camera_datas[camera_id]
 
-        logger.info(f'Retrieving traffic flow data for camera-{camera_id} from db for recommendations.')
-        try:
-            data = {'lta_camera_id': camera_id, 'n': 10}
-            traffic_flow_data = db.get_traffic_flow_by_sensor_last_n(data)
-        except Exception as e:
-            logger.info(f'Error retrieving traffic flow data for recommendations due to {e}')
-            return {'success': False, 'message': f'Error retrieving traffic flow data for recommendations: {e}'}
-        
-        data[int(camera_id)] = {
-            'traffic_flow': traffic_flow_data,
-            'accidents': None
-        }
+            logger.info(f'Retrieving traffic flow data for camera-{camera_id} from db for recommendations.')
+            try:
+                data = {'lta_camera_id': camera_id, 'n': 1000}
+                traffic_flow_data = db.get_traffic_flow_by_sensor_last_n(data)
+            except Exception as e:
+                logger.info(f'Error retrieving traffic flow data for recommendations due to {e}')
+                return {'success': False, 'message': f'Error retrieving traffic flow data for recommendations: {e}'}
+
+            logger.info(f'Retrieving accident data for camera-{camera_id} from db for recommendations.')
+            try:
+                data = {'lta_camera_id': camera_id, 'n': 1000}
+                accident_data = db.get_accidents_by_sensor_last_n(data)
+            except Exception as e:
+                logger.info(f'Error retrieving accident data for recommendations due to {e}')
+                return {'success': False, 'message': f'Error retrieving accident data for recommendations: {e}'}
+            
+            data[int(camera_id)] = {
+                'camera_data': camera_data,
+                'traffic_flow': traffic_flow_data,
+                'accident_data': accident_data
+            }
 
     logger.info('Sending data to retrieve recommendations.')
     try:
         async with AsyncClient() as client:
-            response = await client.post(PLANNING_API + '/get_recommendations', json=data)  # TODO: Change to actual service deets
+            response = await client.post(PLANNING_API + '/get_planning_recommendations', json=data)
             return response.json()
     except Exception as e:
         logger.info(f'Error retrieving planning recommendations due to {e}')
