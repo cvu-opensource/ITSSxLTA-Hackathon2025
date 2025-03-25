@@ -2,6 +2,7 @@
 setlocal enabledelayedexpansion
 set BACKEND_URL=http://localhost:8000
 set CAMERA_ID=1001
+set AREAS=%5B%22TPE%22%2C%20%22KPE%22%2C%20%22PIE%22%5D
 
 echo Testing Controller Service API health and availability!!
 
@@ -40,7 +41,7 @@ echo ===== Test DB calls =====
 
 echo.
 echo 1. Test traffic_update
-curl -X POST "%BACKEND_URL%/traffic_update" -H "Content-Type: application/json" -d "{\"cameras\": \"[]\", \"results\": \"[]\", \"frames\": \"[]\"}"
+curl -X POST "%BACKEND_URL%/traffic_update" -H "Content-Type: application/json" -d '{"cameras": {}, "results": {}, "frames": {}}'
 echo.
 
 echo.
@@ -48,7 +49,7 @@ echo ===== Test recommendations =====
 
 echo.
 echo 1. Test get_recommendations
-curl -X POST "%BACKEND_URL%/get_recommendations"
+curl -X POST "%BACKEND_URL%/get_recommendations?query=%5B%22TPE%22%2C%20%22KPE%22%2C%20%22PIE%22%5D"
 echo.
 
 echo.
