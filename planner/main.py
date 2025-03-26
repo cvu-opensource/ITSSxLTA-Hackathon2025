@@ -45,14 +45,14 @@ column_text_mapping = {
     7: 'Construction',
     8: 'weekday',
     9: 'event_days',
-    10: 'vis',
+    10: 'visibility',
     11: 'surface',
     12: 'terrain',
     13: 'width',
     14: 'weather',
-    15: 'flow',
-    16: 'occupancy',
-    17: 'speed',
+    15: 'Road\n flow',
+    16: 'Road\n occupancy',
+    17: 'Road\n speed',
 }
 
 # to define the causal order of the factors, the larger the key the higher the order.
@@ -81,14 +81,14 @@ def process_traffic_data(traffic_data):
         processed_data['location'] = all_data['camera_data']['description']
 
         # Get traffic flow information
-        processed_data['average_pixel_speed'] = all_data['traffic_data']['pixel_speed']['average']
-        processed_data['average_traffic_density'] = all_data['traffic_data']['traffic_density']['average']
-        processed_data['average_vehicles'] = all_data['traffic_data']['num_vehicles']['average']
+        processed_data['average_pixel_speed'] = all_data['traffic_data']['average_pixel_speed']
+        processed_data['average_traffic_density'] = all_data['traffic_data']['average_traffic_density']
+        processed_data['average_vehicles'] = all_data['traffic_data']['average_vehicles']
 
         # Get unique accident times for each sensor location
-        for accident in all_data['accident_data']:
+        for accident in all_data['traffic_data']['accidents']:
             processed_data['accidents'] = processed_data.get('accidents', set())
-            processed_data['accidents'].add(accident['datetime'])
+            processed_data['accidents'].add(accident)
 
         processed_datas.append(processed_data)
     return processed_datas
@@ -105,9 +105,9 @@ def get_planning_recommendations(data):
     selected_graph = graphs[sg_location]
     graph_context_string = selected_graph.get_context_for_llm(query_nodes=query_nodes)
 
-
     # Generate traffic data as LLM context
-    processed_traffic_data = process_traffic_data(data)
+    processed_traffic_data = process_traffic_data(data['traffic_data'])
+    # print('processed_traffic_data', processed_traffic_data)
 
     # Start debate and get debate history back
     history = llmdebater.debate(processed_traffic_data, graph_context_string, max_rounds=5)
@@ -120,3 +120,89 @@ def health_check():
     Health check endpoint
     """
     return {"status": "healthy (healthy core bro is literally healthy if there was a health competition bro wold be first place bro eats health for dinner bro's middle name is health bro is fitness incarante bro years for the health mines)"}
+
+
+some_camera_data = {
+    'camera_data': {
+        'angle': 325,
+        'description': 'TPE (PIE) - Upper Changi F/O'
+    },
+    'traffic_data': {
+            "location": "TPE (PIE) - Upper Changi F/O",
+            "average_pixel_speed": 0.051769,
+            "average_traffic_density": 0.458262,
+            "average_vehicles": 6.283333,
+            "accidents": [
+                "2025-03-26T10:35:42",
+                "2025-03-26T03:25:46",
+                "2025-03-26T03:10:45",
+                "2025-03-26T03:20:46",
+                "2025-03-26T03:55:47",
+                "2025-03-26T01:30:41",
+                "2025-03-26T02:10:43",
+                "2025-03-26T01:56:02",
+                "2025-03-26T01:10:40",
+                "2025-03-26T02:35:44",
+                "2025-03-25T23:05:55",
+                "2025-03-26T10:15:41",
+                "2025-03-26T03:35:46",
+                "2025-03-26T09:45:40",
+                "2025-03-26T03:05:45",
+                "2025-03-26T10:20:41",
+                "2025-03-26T03:45:47",
+                "2025-03-26T02:45:44",
+                "2025-03-26T02:00:42",
+                "2025-03-26T01:50:42",
+                "2025-03-26T02:40:44",
+                "2025-03-25T22:40:54",
+                "2025-03-26T09:20:39",
+                "2025-03-26T09:31:00",
+                "2025-03-26T02:05:43",
+                "2025-03-26T09:26:00",
+                "2025-03-26T02:15:43",
+                "2025-03-26T02:25:43",
+                "2025-03-26T10:25:42",
+                "2025-03-26T09:56:01",
+                "2025-03-26T03:30:46",
+                "2025-03-26T01:05:40",
+                "2025-03-26T10:45:42",
+                "2025-03-26T03:50:47",
+                "2025-03-26T09:40:40",
+                "2025-03-26T01:40:42",
+                "2025-03-26T02:30:44",
+                "2025-03-26T10:06:01",
+                "2025-03-26T01:25:41",
+                "2025-03-26T10:31:02",
+                "2025-03-26T10:40:42",
+                "2025-03-26T09:36:00",
+                "2025-03-26T10:01:01",
+                "2025-03-26T09:10:59",
+                "2025-03-26T01:45:42",
+                "2025-03-25T23:15:56",
+                "2025-03-26T10:51:02",
+                "2025-03-25T23:00:35",
+                "2025-03-26T02:55:45",
+                "2025-03-26T01:20:41",
+                "2025-03-26T03:15:45",
+                "2025-03-26T10:10:41",
+                "2025-03-26T01:35:41",
+                "2025-03-25T22:50:35",
+                "2025-03-26T02:20:43",
+                "2025-03-26T03:40:46",
+                "2025-03-26T00:50:40",
+                "2025-03-26T03:00:45",
+                "2025-03-26T02:50:44",
+                "2025-03-26T09:51:00",
+                "2025-03-26T09:15:59",
+                "2025-03-26T00:56:00",
+            ],
+    }
+}
+fake_data = {
+    'location': 'PIE', 
+    'query_nodes': ['surface', 'visibility', 'Traffic\n Hazard'],
+    'traffic_data': {
+        7791: some_camera_data
+    }
+}
+get_planning_recommendations(fake_data)
