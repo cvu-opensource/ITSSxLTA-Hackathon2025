@@ -1,11 +1,15 @@
+import os
+from dotenv import load_dotenv
+
 from fastapi import FastAPI
 from debater import LLMDebater
 import pickle
 from visualize_graph import TrafficGraph
 
 # Initialise app and classes
+load_dotenv
 app = FastAPI()
-llmdebater = LLMDebater()
+llmdebater = LLMDebater(os.environ.get('DEEPSEEK_API'))
 
 # TODO: Hi gerard i initialize a bunch of this stuff before initing my class. Kinda messy
 # Got any ideas where i can park all this yap
