@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph edgedefault="directed">
+    <node id="1125A-Animal Hazard" />
+    <node id="flow" />
+    <node id="event_days" />
+    <node id="occupancy" />
+    <node id="width" />
+    <node id="1182-Trfc Collision-No Inj" />
+    <node id="1179-Trfc Collision-1141 Enrt" />
+    <node id="vis" />
+    <node id="surface" />
+    <node id="1125-Traffic Hazard" />
+    <node id="CZP-Assist with Construction" />
+    <node id="20002-Hit and Run No Injuries" />
+    <node id="1183-Trfc Collision-Unkn Inj" />
+    <node id="weekday" />
+    <node id="FIRE-Report of Fire" />
+    <node id="terrain" />
+    <edge source="1125A-Animal Hazard" target="flow" />
+    <edge source="1125A-Animal Hazard" target="occupancy" />
+    <edge source="event_days" target="occupancy" />
+    <edge source="event_days" target="flow" />
+    <edge source="width" target="occupancy" />
+    <edge source="width" target="flow" />
+    <edge source="1182-Trfc Collision-No Inj" target="occupancy" />
+    <edge source="1182-Trfc Collision-No Inj" target="flow" />
+    <edge source="1179-Trfc Collision-1141 Enrt" target="flow" />
+    <edge source="1179-Trfc Collision-1141 Enrt" target="occupancy" />
+    <edge source="vis" target="flow" />
+    <edge source="vis" target="occupancy" />
+    <edge source="surface" target="flow" />
+    <edge source="surface" target="occupancy" />
+    <edge source="1125-Traffic Hazard" target="flow" />
+    <edge source="1125-Traffic Hazard" target="occupancy" />
+    <edge source="CZP-Assist with Construction" target="occupancy" />
+    <edge source="CZP-Assist with Construction" target="flow" />
+    <edge source="20002-Hit and Run No Injuries" target="flow" />
+    <edge source="20002-Hit and Run No Injuries" target="occupancy" />
+    <edge source="1183-Trfc Collision-Unkn Inj" target="flow" />
+    <edge source="1183-Trfc Collision-Unkn Inj" target="occupancy" />
+    <edge source="weekday" target="flow" />
+    <edge source="weekday" target="occupancy" />
+    <edge source="FIRE-Report of Fire" target="flow" />
+    <edge source="FIRE-Report of Fire" target="occupancy" />
+    <edge source="terrain" target="flow" />
+    <edge source="terrain" target="occupancy" />
+  </graph>
+</graphml>
