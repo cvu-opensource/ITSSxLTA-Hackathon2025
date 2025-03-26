@@ -4,12 +4,17 @@ import pickle
 from matplotlib import pyplot as plt
 import math
 import numpy as np
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 class TrafficGraph():
     """
     Parses a numpy array and some user-defined dictionaries into a graph.
     """
-    def __init__(self, factors:dict[int, str], hierarchies:dict[int, list]):
+    def __init__(self, factors:dict[int, str], hierarchies:dict[int, list]):  # TODO: I was about to remove these but not too sure if u wld rather keep first
         """
         Instantiates nx.DiGraph and adds nodes. Edges are added later so we can threshold the weights.
 
@@ -19,9 +24,39 @@ class TrafficGraph():
                 there are 4 elements: list of indexes, colours, x and y of the starting node. # TODO finalize this
         """
         self.graph = nx.DiGraph()
+
+        factors = {
+            0: 'Traffic\n Hazard',
+            1: 'Collision\n Inj',
+            2: 'Collision\n No Inj',
+            3: 'Collision\n Enrt',
+            4: 'Hit and Run\n No Inj',
+            5: 'Reported\n Fire',
+            6: 'Animal\n Hazard', 
+            7: 'Construction',
+            8: 'weekday',
+            9: 'event_days',
+            10: 'visibility',
+            11: 'surface',
+            12: 'terrain',
+            13: 'width',
+            14: 'weather',
+            15: 'Road\n flow',
+            16: 'Road\n occupancy',
+            17: 'Road\n speed',
+        }
         self.idx_to_factor = factors
         self.factor_to_idx = {v: k for k, v in factors.items()}
-        self.hierarchies = hierarchies
+
+        # list of indices -> keys in the column_text_mapping dict
+        accidents = [0, 1, 2, 3, 4, 5, 6, 7]
+        meta = [8, 9, 10, 11, 12, 13, 14]
+        outcomes = [15, 16, 17]
+        self.hierarchies = {
+            3: (meta, 'green', 1, 5),
+            2: (accidents, 'red', 1, 3),
+            1: (outcomes, 'blue', 1, 1),
+        }
         self.num_factors = len(factors)
 
         for idx, text in self.idx_to_factor.items():
@@ -192,61 +227,61 @@ class TrafficGraph():
         return weights, thresh_edges
 
 
-fp = '/mnt/e/ITSSxLTA-Hackathon2025/planner/district_DAG_lambda_0.001_rho_1_K_2.pkl'
-with open(fp, 'rb') as file: 
+# Intitialise global variables first (no matter the usage)
+with open(os.environ.get('PICKLE_FILE'), 'rb') as file: 
     E_est, G_est = pickle.load(file)  # dict, dict
 
-accidents = [0, 1, 2, 3, 4, 5, 6, 7]
-meta = [8, 9, 10, 11, 12, 13, 14]
-outcomes = [15, 16, 17]
 location_key_mappings = {
     0: 'PIE',
     1: 'CTE',
     2: 'AYE',
+    3: 'TPE',
+    4: 'BKE',
+    5: 'ECP',
+    6: 'KJE',
+    7: 'SLE',
+    8: 'KPE',
+    9: 'MCE',
+    10: 'Woodlands_Checkpoint',
+    11: 'Tuas_Checkpoint',
+    12: 'Sentosa',
+
 }
 
-keys_of_est = list(E_est.keys())
-for key in keys_of_est:
-    looped_key = key % 3
-    sg_location = location_key_mappings[looped_key]
+# Converting E_est:dict to have sg_location keys
+for key, sg_location in location_key_mappings.items():
+    looped_key = key % 3  # TODO: change this once graph for all expressways are created
     E_est[sg_location] = E_est[looped_key]
-    # E_est.pop(key)
 
-column_text_mapping = {
-    0: 'Traffic\n Hazard',
-    1: 'Collision\n Inj',
-    2: 'Collision\n No Inj',
-    3: 'Collision\n Enrt',
-    4: 'Hit and Run\n No Inj',
-    5: 'Reported\n Fire',
-    6: 'Animal\n Hazard', 
-    7: 'Construction',
-    8: 'weekday',
-    9: 'event_days',
-    10: 'visibility',
-    11: 'surface',
-    12: 'terrain',
-    13: 'width',
-    14: 'weather',
-    15: 'flow',
-    16: 'occupancy',
-    17: 'speed',
-}
+# Dust out old integer pointers
+[E_est.pop(key) for key in list(E_est.keys()) if isinstance(key, int)]
 
-order_metas = {
-    3: (meta, 'green', 1, 5),
-    2: (accidents, 'red', 1, 3),
-    1: (outcomes, 'blue', 1, 1),
-}
+# Create graph dictionary any time this file is called
+GRAPHS = {}
+for key, network in E_est.items():
+    graph = TrafficGraph()
+    graph.add_edges(network, weight_thresh=0.1) 
+    GRAPHS[key] = graph
 
-# simulating a query 
 
-# query = ['PIE', ['surface', 'visibility', 'Traffic\n Hazard']]
-# selected_network = E_est[query[0]]
-# print(selected_network)
+# Simulate graph creation
+if __name__=='__main__':
 
-# graph = TrafficGraph(column_text_mapping, order_metas)
-# graph.add_edges(selected_network, weight_thresh=0.1)
-# thing = graph.get_context_for_llm(query_nodes=query[1])
-# print(thing)
-# network.vis_digraph(example_graph, save_path=f'graph_0.png')
+    keys_of_est = list(E_est.keys())
+    for key in keys_of_est:
+        looped_key = key % 3
+        sg_location = location_key_mappings[looped_key]
+        E_est[sg_location] = E_est[looped_key]
+        # E_est.pop(key)
+
+    # simulating a query 
+
+    # query = ['PIE', ['surface', 'visibility', 'Traffic\n Hazard']]
+    # selected_network = E_est[query[0]]
+    # print(selected_network)
+
+    # graph = TrafficGraph(column_text_mapping, order_metas)
+    # graph.add_edges(selected_network, weight_thresh=0.1)
+    # thing = graph.get_context_for_llm(query_nodes=query[1])
+    # print(thing)
+    # network.vis_digraph(example_graph, save_path=f'graph_0.png')

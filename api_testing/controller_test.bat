@@ -2,39 +2,39 @@
 setlocal enabledelayedexpansion
 set BACKEND_URL=http://localhost:8000
 set CAMERA_ID=1001
-set AREA="TPE"
+set AREA="Sentosa"
 
 echo Testing Controller Service API health and availability!!
 
-echo.
-echo ===== Checking service health =====
-echo.
+@REM echo.
+@REM echo ===== Checking service health =====
+@REM echo.
 
-curl http://localhost:8000/healthz
-echo.
+@REM curl http://localhost:8000/healthz
+@REM echo.
 
-echo.
-echo ===== Test controller calls =====
+@REM echo.
+@REM echo ===== Test controller calls =====
 
-echo.
-echo 1. get_all_data
-curl -X GET "%BACKEND_URL%/get_all_data"
-echo.
+@REM echo.
+@REM echo 1. get_all_data
+@REM curl -X GET "%BACKEND_URL%/get_all_data"
+@REM echo.
 
-echo.
-echo 2. Test get_camera_data_by_sensor for %CAMERA_ID%
-curl -X GET "%BACKEND_URL%/get_camera_data_by_sensor?camera_id=%CAMERA_ID%"
-echo.
+@REM echo.
+@REM echo 2. Test get_camera_data_by_sensor for %CAMERA%
+@REM curl -X GET "%BACKEND_URL%/get_camera_data_by_sensor?camera_id=%CAMERA_ID%"
+@REM echo.
 
-echo.
-echo 3. Test get_traffic_data_by_sensor for %CAMERA_ID%
-curl -X GET "%BACKEND_URL%/get_traffic_data_by_sensor?camera_id=%CAMERA_ID%"
-echo.
+@REM echo.
+@REM echo 3. Test get_traffic_data_by_sensor for %CAMERA_ID%
+@REM curl -X GET "%BACKEND_URL%/get_traffic_data_by_sensor?camera_id=%CAMERA_ID%"
+@REM echo.
 
-echo.
-echo 4. Test get_live_traffic_updates
-curl -X GET "%BACKEND_URL%/get_live_traffic_updates"
-echo.
+@REM echo.
+@REM echo 4. Test get_live_traffic_updates
+@REM curl -X GET "%BACKEND_URL%/get_live_traffic_updates"
+@REM echo.
 
 echo.
 echo ===== Test recommendations =====

@@ -13,7 +13,7 @@ class LLMDebater:
     A class that facilitates a debate between 2 LLMs to propose and analyse possible solutions
     """
 
-    def __init__(self):
+    def __init__(self, url):
         self.model_url = "http://localhost:7000/api/chat"
 
         self.engineer_persona = 'Urban Traffic Engineer, focusing on finding the most effective, cost-effective and quick solutions.'

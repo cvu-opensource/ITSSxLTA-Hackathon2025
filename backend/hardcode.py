@@ -15,8 +15,8 @@ weather_sensor_mapping = {
     'SLE': ['S104', 'S227'],
     'KPE': ['S221'],
     'MCE': [],
-    'Woodlands Checkpoint': ['S210'],
-    'Tuas Checkpoint': ['S115'],
+    'Woodlands_Checkpoint': ['S210'],
+    'Tuas_Checkpoint': ['S115'],
     'Sentosa': []
 }
 
@@ -31,8 +31,8 @@ camera_mapping = {
     'SLE': [9701, 9702, 9703, 9704, 9705, 9706],
     'KPE': [1005, 1006],
     'MCE': [1501, 1502, 1503, 1504, 1505],
-    'Woodlands Checkpoint': [2701, 2702, 2704],
-    'Tuas Checkpoint': [4703, 4713],
+    'Woodlands_Checkpoint': [2701, 2702, 2704],
+    'Tuas_Checkpoint': [4703, 4713],
     'Sentosa': [4798, 4799]
 }
 
