@@ -1,23 +1,4 @@
-export const outlierTrafficData = {  // jic no traffic flow data - dyw to set some default value for the missing traffic data
-    "TPE": {
-        "priority": "Low",
-        "average_rainfall": 0.0
-    },
-    "CTE": {"priority": "Low", "average_rainfall": 0.0},
-    "BKE": {"priority": "Low", "average_rainfall": 0.0},
-    "ECP": {"priority": "Low", "average_rainfall": 0.0},
-    "AYE": {"priority": "Low", "average_rainfall": 0.0},
-    "PIE": {"priority": "Low", "average_rainfall": 0.0},
-    "KJE": {"priority": "Low", "average_rainfall": 0.0},
-    "SLE": {"priority": "Low", "average_rainfall": 0.0},
-    "KPE": {"priority": "Low", "average_rainfall": 0.0},
-    "MCE": {"priority": "Low", "average_rainfall": 0.0},
-    "Woodlands Checkpoint": {"priority": "Low", "average_rainfall": 0.0},
-    "Tuas Checkpoint": {"priority": "Low", "average_rainfall": 0.0},
-    "Sentosa": {"priority": "Low", "average_rainfall": 0.0},
-}
-
-export const TrafficData = {  // normal expected output - already ranked btw
+export const TrafficData = {
     "Woodlands Checkpoint": {
         "pixel_speed": {"average_average": 0.0, "average_relative": 1.15},  // show relative 'Relative Pixel Speed'
         "traffic_density": {"average_average": 0.0, "average_relative": 0.0},  // show relative 'Relative Traffic Density' - but can dont show also cuz its scuffed af

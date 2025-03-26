@@ -1,6 +1,7 @@
 import os
 import logging
 from dotenv import load_dotenv
+from datetime import datetime
 
 import asyncio
 from httpx import AsyncClient
@@ -101,13 +102,22 @@ def process_average_traffic_data(data):
     """
     Given n records of traffic data, compute the average and determine state of the most recent values
     """
-    logger.info(f'data {data}')
     temp = {}
-    for datetime, traffic_data in data.items():
+    latest_datetime = None
+    for timestamp, traffic_data in data.items():
+        
+        # Get latest datetime
+        if latest_datetime is not None:
+            old_datetime = datetime.fromisoformat(latest_datetime)
+            new_datetime = datetime.fromisoformat(timestamp)
+            if new_datetime > old_datetime:
+                latest_datetime = timestamp
+        else:
+            latest_datetime = timestamp
+
         for k, v in traffic_data.items():
             temp[k] = temp.get(k, []) + [float(v)]
 
-    logger.info(f'temp {temp}')
     result = {}
     for statistic in temp:
         if len(temp[statistic]) > 0:
@@ -121,7 +131,7 @@ def process_average_traffic_data(data):
                 'average': 0.0,
                 'relative': 0.0
             }
-    logger.info(f'result {result}')
+    result['datetime'] = latest_datetime
     return result
 
 def process_camera_data(camera_data):
@@ -164,6 +174,7 @@ def process_grouped_traffic_data(traffic_data):
     compute the average to determine priority based on relative values
     """
     grouped_data = {}
+    datetimes = {}
     for mapping, camera_ids in camera_mapping.items():
         temp = {}
 
@@ -171,6 +182,17 @@ def process_grouped_traffic_data(traffic_data):
         for camera_id in camera_ids:
             if camera_id in traffic_data:
                 data = traffic_data[camera_id]
+
+                if 'datetime' in data:  # Gets the latest datetime in the records for that sensor
+                    new = data.pop('datetime')
+                    if mapping in datetimes:
+                        old_datetime = datetime.fromisoformat(datetimes[mapping])
+                        new_datetime = datetime.fromisoformat(new)
+                        if new_datetime > old_datetime:
+                            datetimes[mapping] = new
+                    else:
+                        datetimes[mapping] = new
+
                 for statistic, value in data.items():
                     temp[statistic] = temp.get(statistic, {'average': [], 'relative': []})
                     temp[statistic]['average'].append(float(value['average']))
@@ -190,11 +212,11 @@ def process_grouped_traffic_data(traffic_data):
         reverse=True
     )
     
-    # Converting back to dictionary and adding priority level
+    # Converting back to dictionary, adding priority level and datetime
     grouped_data = {
         key: {
             **val,
-            **{'priority': priority_mapping(val)}
+            **{'priority': priority_mapping(val), 'datetime': datetimes[key]},
         } for (key, val) in grouped_data
     }
     return grouped_data
@@ -207,7 +229,8 @@ def process_grouped_weather_data(grouped_data, weather_data):
     for area in grouped_data:
         rainfall_values = []
         for weather_sensor in weather_sensor_mapping[area]:
-            rainfall_values.append(weather_data[weather_sensor]['rainfall'])
+            if weather_sensor in weather_data:
+                rainfall_values.append(weather_data[weather_sensor]['rainfall'])
         if rainfall_values:
             grouped_data[area]['average_rainfall'] = round(sum(rainfall_values) / len(rainfall_values), 2)
         else:
@@ -249,7 +272,7 @@ async def save_traffic_flow(results: dict):
     Sends traffic flow updates to the database service for storage
     """
     try:
-        logger.info(f'Saving traffic flow data {results}.')
+        logger.info('Saving traffic flow data.')
         for camera_id, datas in results.items():
             for data in datas:
                 db.insert_traffic_flows({camera_id: data})
@@ -325,7 +348,7 @@ async def get_all_data():
 
             # Compute average and relative values for traffic data before sending to UI
             traffic_data = process_average_traffic_data(traffic_data)
-            if traffic_data['pixel_speed']['relative'] < 1.0 and traffic_data['traffic_density']['relative'] > 1.0 and traffic_data['num_vehicles']['relative'] > 1.0:
+            if traffic_data['pixel_speed']['relative'] < 1.0 and (traffic_data['traffic_density']['relative'] > 1.0 or traffic_data['num_vehicles']['relative'] > 1.0):
                 traffic_data['status'] = 'congested'
             else:
                 traffic_data['status'] = 'normal'
@@ -395,7 +418,7 @@ async def get_live_traffic_updates():
         try:
             traffic_data = db.get_traffic_flow_by_sensor_last_n(data)
             
-            # Compute average and relative values for traffic data first
+            # Compute average and relative values for traffic data per camera first
             result[camera_id] = process_average_traffic_data(traffic_data)
 
         except Exception as e:
@@ -424,7 +447,7 @@ async def get_recommendations(area):
         camera_datas = db.get_all_cameras()
         camera_datas = process_camera_data(camera_datas)
     except Exception as e:
-        logger.info(f'Error retrieving traffic flow for recommendations data due to {e}')
+        logger.error(f'Error retrieving traffic flow for recommendations data due to {e}')
         return {'success': False, 'message': f'Error retrieving camera data for recommendations: {e}'}
     
     # Only get data for sensors within specified areas
@@ -459,5 +482,5 @@ async def get_recommendations(area):
             response = await client.post(PLANNING_API + '/get_planning_recommendations', json=data)
             return response.json()
     except Exception as e:
-        logger.info(f'Error retrieving planning recommendations due to {e}')
+        logger.error(f'Error retrieving planning recommendations due to {e}')
         return {'success': False, 'message': f'Error retrieving planning recommendations: {e}'}

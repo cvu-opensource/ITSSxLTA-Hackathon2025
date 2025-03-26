@@ -113,7 +113,7 @@ class CVDetector:
             Results [dict]: Dictionary of {lta_camera_id : [{'total': 1, cls: 1, ...}, ...], ...}
         """
         if not images:
-            self.logger.error('Error: No images passed into vehicle detector.')
+            self.logger.error('Error: No images passed into cv detector.')
             return images, {}
 
         self.logger.info('Running CV processing...')
