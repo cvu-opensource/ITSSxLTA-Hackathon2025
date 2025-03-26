@@ -83,7 +83,7 @@ class LLMDebater:
             response1 = self.generate_response(self.generator_persona, problem_statement, message + specifications)
 
             self.conversation_history.append({"role": "LLM1", "content": response1})
-            
+            # print('response1', response1)
             # LLM 2 critiques and refines the solution
             message = f'An {self.generator_persona} created this solution. Critique and refine it: {response1}\n'
             response2 = self.generate_response(self.discriminator_persona, problem_statement, message + specifications)
@@ -91,7 +91,7 @@ class LLMDebater:
             
             # Update the message for the next round
             message = f"Refined solution so far: {response2}\nFurther improve or debate this."
-
+            # print('response2', response2)
         return self.conversation_history
 
 def main():
