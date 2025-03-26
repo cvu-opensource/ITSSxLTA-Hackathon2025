@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 import math
 import numpy as np
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -24,25 +25,38 @@ class TrafficGraph():
         """
         self.graph = nx.DiGraph()
 
+        self.for_drawing_naming = {
+            'Traffic Hazard': 'Traffic\n Hazard',
+            'Collisions (Injuries)': 'Collision\n Inj',
+            'Collisions (No Injuries)': 'Collision\n No Inj',
+            'Collisions Enrt': 'Collision\n Enrt',
+            'Hit and Run (No Injuries)': 'Hit and Run\n No Inj',
+            'Reported Fire': 'Reported\n Fire',
+            'Animal Hazard': 'Animal\n Hazard', 
+            'Road flow': 'Road\n flow',
+            'Road occupancy': 'Road\n occupancy',
+            'Road speed': 'Road\n speed',
+        }
+
         factors = {
-            0: 'Traffic\n Hazard',
-            1: 'Collision\n Inj',
-            2: 'Collision\n No Inj',
-            3: 'Collision\n Enrt',
-            4: 'Hit and Run\n No Inj',
-            5: 'Reported\n Fire',
-            6: 'Animal\n Hazard', 
+            0: 'Traffic Hazard',
+            1: 'Collisions (Injuries)',
+            2: 'Collisions (No Injuries)',
+            3: 'Collisions Enrt',
+            4: 'Hit and Run (No Injuries)',
+            5: 'Reported Fire',
+            6: 'Animal Hazard', 
             7: 'Construction',
-            8: 'weekday',
-            9: 'event_days',
-            10: 'visibility',
-            11: 'surface',
-            12: 'terrain',
-            13: 'width',
-            14: 'weather',
-            15: 'Road\n flow',
-            16: 'Road\n occupancy',
-            17: 'Road\n speed',
+            8: 'Weekday',
+            9: 'Event_days',
+            10: 'Visibility',
+            11: 'Surface',
+            12: 'Terrain',
+            13: 'Width',
+            14: 'Weather',
+            15: 'Road flow',
+            16: 'Road occupancy',
+            17: 'Road speed',
         }
         self.idx_to_factor = factors
         self.factor_to_idx = {v: k for k, v in factors.items()}
@@ -102,7 +116,7 @@ class TrafficGraph():
         then, format it into a string to pass to an llm as context
         """
         context_string = "Context: For traffic accidents in this region, "
-        graphs = self.query_graph(query_nodes, weight_threshs, top_n)
+        graphs, pyvis_networks = self.query_graph(query_nodes, weight_threshs, top_n)
         for graph in graphs:
             edge_attrs: dict = nx.get_edge_attributes(graph, 'weight')
             for pair, weight in edge_attrs.items():
@@ -112,15 +126,22 @@ class TrafficGraph():
                 higher_order = higher_order.replace('\n', '')
 
                 context_string += f"{higher_order} has a causal factor of {weight} with {lower_order}. "
+        
+        html_paths = []
+        for idx, pyvis_network in enumerate(pyvis_networks):
+            path = Path(f'temp_{idx}.html')
+            full_path = path.resolve().name
+            html_paths.append(full_path)
+            pyvis_network.save_graph(full_path)
 
-        return context_string
+        return context_string, html_paths
         
 
     def query_graph(self,
                     query_nodes: list,
                     weight_threshs: list | None = None,
                     top_n: int = 3,
-        ) -> list[nx.Graph]:
+        ) -> tuple[list[nx.Graph], list[Network]]:
         """
         Queries graphs and returns subgraphs with edges beyond a certain threshold and only the top_n.
         The graphs returned will be a directed graph for similar order sorting as the source graph,
@@ -150,13 +171,24 @@ class TrafficGraph():
                 subg.add_edge(higher_order, lower_order, weight=weight)
             subgraphs.append(subg)
 
-        return subgraphs
+        nets = []
+        for subgraph in subgraphs:
+            net = Network()
+            net.from_nx(subgraph)
+            nets.append(net)
+        return subgraphs, nets
 
 
     def draw_nodes(self):
         for order, (ls, colour, x, y) in self.hierarchies.items():
             texts = [self.idx_to_factor[i] for i in ls]
-            labels = {text: text for text in texts}
+            labels = {}
+            for text in texts:
+                if text in self.for_drawing_naming:
+                    label = self.for_drawing_naming[text]
+                else:
+                    label = text
+                labels[text] = label
             nx.draw_networkx_nodes(self.graph, self.pos, nodelist=texts, node_color=f"tab:{colour}", **self.general_options)
             nx.draw_networkx_labels(self.graph, self.pos, labels=labels, font_size=8)
             
@@ -264,23 +296,23 @@ for key, network in E_est.items():
 
 
 # Simulate graph creation
-if __name__=='__main__':
+# if __name__=='__main__':
 
-    keys_of_est = list(E_est.keys())
-    for key in keys_of_est:
-        looped_key = key % 3
-        sg_location = location_key_mappings[looped_key]
-        E_est[sg_location] = E_est[looped_key]
+    # keys_of_est = list(E_est.keys())
+    # for key in keys_of_est:
+    #     looped_key = key % 3
+    #     sg_location = location_key_mappings[looped_key]
+    #     E_est[sg_location] = E_est[looped_key]
         # E_est.pop(key)
 
     # simulating a query 
 
-    # query = ['PIE', ['surface', 'visibility', 'Traffic\n Hazard']]
-    # selected_network = E_est[query[0]]
-    # print(selected_network)
+query = ['PIE', ['Surface', 'Visibility', 'Traffic Hazard']]
+selected_graph = GRAPHS[query[0]]
+# print(selected_network)
 
-    # graph = TrafficGraph(column_text_mapping, order_metas)
-    # graph.add_edges(selected_network, weight_thresh=0.1)
-    # thing = graph.get_context_for_llm(query_nodes=query[1])
-    # print(thing)
-    # network.vis_digraph(example_graph, save_path=f'graph_0.png')
+# graph = TrafficGraph()
+# graph.add_edges(selected_network, weight_thresh=0.1)
+thing = selected_graph.get_context_for_llm(query_nodes=query[1])
+# print(thing)
+# selected_graph.vis_digraph(E_est[query[0]], save_path=f'graph_0.png')

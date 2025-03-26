@@ -52,7 +52,7 @@ def get_planning_recommendations(data):
     sg_location: str = data['location']
     query_nodes: list[str] = data['query_nodes']
     selected_graph = GRAPHS[sg_location]
-    graph_context_string = selected_graph.get_context_for_llm(query_nodes=query_nodes)
+    graph_context_string, html_paths = selected_graph.get_context_for_llm(query_nodes=query_nodes)
 
     # Generate traffic data as LLM context
     processed_traffic_data = process_traffic_data(data['traffic_data'])
@@ -60,7 +60,7 @@ def get_planning_recommendations(data):
     # Start debate and get debate history back
     history = llmdebater.debate(processed_traffic_data, graph_context_string, max_rounds=5)
 
-    return history
+    return history, html_paths
 
 @app.get('/healthz')
 def health_check():
