@@ -16,25 +16,18 @@ class LLMDebater:
     def __init__(self):
         self.model_url = "http://localhost:7000/api/chat"
 
-        self.generator_persona = 'Urban Traffic Engineer, focusing on finding the most effective, cost-effective and quick solutions.'
-        self.discriminator_persona = 'AI Traffic Analyst, emphasizing efficiency, safety, and long-term sustainability of proposed plans.'
+        self.engineer_persona = 'Urban Traffic Engineer, focusing on finding the most effective, cost-effective and quick solutions.'
+        self.critic_persona = 'AI Traffic Analyst, emphasizing efficiency, safety, and long-term sustainability of proposed plans.'
 
         self.conversation_history = []
 
-    def generate_response(self, role: str, context: str, message: str) -> str:
+    def generate_response(self, role: str, context: str, message: str, temp: int=0) -> str:
         """
         Structured method to call the LLM and return a response
         """
         context = context.replace("'", "")
-        prompt = f"Your role is: {role}\n\nThis is the context: {context}\n\nDo this: {message}\nResponse:"
-        # prompt = prompt[:100]
-        # print("prompt", prompt)
-        # print('\n\n\n\n\ JSON!!!!!!!!!!!!!', json.dumps({
-        #             "model": "deepseek-r1:1.5b",
-        #             "messages": [
-        #                 {"role": "user", "content": prompt}
-        #             ],
-        #             "temperature": 0.7}))
+        prompt = f"Your role is: {role}\n\nThis is the context: {context}\n\Follow these instructions: {message}\nResponse:"
+
         response = requests.post(
             self.model_url,
             data=json.dumps({
@@ -42,7 +35,7 @@ class LLMDebater:
                 "messages": [
                     {"role": "user", "content": prompt}
                 ],
-                # "temperature": 0.7,
+                "temperature": temp,
                 "stream": False,
                 }),
             timeout=10  # Set timeout for better handling
@@ -70,29 +63,37 @@ class LLMDebater:
             List of conversation exchanges.
         """
         # Format the initial problem statement
-        problem_statement = (
+        engineer_problem_statement = (
             f"Traffic Data: {traffic_data}\n\n"
             f"Graph Context: {graph_context}\n\n"
-            "Discuss and propose solutions to reduce accident rates and traffic congestion in the network."
+            "You are in a debate with another entity, and your goal is to reduce accident rates and traffic congestion in the network."
         )
-        specifications = 'Keep your responses clear and concised, always following a structured manner.'
-        message = "Start the discussion by proposing a solution to reduce traffic congestion and accidents in the proposed region."
-
+        critic_problem_statement = (
+            f"Traffic Data: {traffic_data}\n\n"
+            f"Graph Context: {graph_context}\n\n"
+            "You are in a debate with another entity, and your goal is to reasonably critic anything they say."
+        )
+        specifications = 'Keep your responses clear and concise, responding in about one to two sentences, but not omitting any semantics.'
+        start_message = "Start the discussion by making an observation of the context given."
+        temp_scheduler = [1 - curr_round/max_rounds for curr_round in range(max_rounds)]  # start off more unsure, end off more sure.
+        conversation_history = []
+        message = start_message
+        
         for round_num in range(max_rounds):
+            debate_temp = temp_scheduler[round_num]
             # LLM 1 proposes a solution
-            response1 = self.generate_response(self.generator_persona, problem_statement, message + specifications)
+            response1 = self.generate_response(self.engineer_persona, engineer_problem_statement, message + specifications, temp=debate_temp)
+            conversation_history.append({"role": "LTA", "content": response1})
 
-            self.conversation_history.append({"role": "LLM1", "content": response1})
-            # print('response1', response1)
             # LLM 2 critiques and refines the solution
-            message = f'An {self.generator_persona} created this solution. Critique and refine it: {response1}\n'
-            response2 = self.generate_response(self.discriminator_persona, problem_statement, message + specifications)
-            self.conversation_history.append({"role": "LLM2", "content": response2})
+            message = f'An {self.engineer_persona} created this solution. Find problems with it and critique it: {response1}\n'
+            response2 = self.generate_response(self.critic_persona, critic_problem_statement, message + specifications,  temp=debate_temp)
+            conversation_history.append({"role": "ITSS", "content": response2})
             
             # Update the message for the next round
-            message = f"Refined solution so far: {response2}\nFurther improve or debate this."
+            message = f"An {self.critic_persona} has critiqued a solution from you: {response2}\nFurther improve or debate this."
             # print('response2', response2)
-        return self.conversation_history
+        return conversation_history
 
 def main():
     debater = LLMDebater()
