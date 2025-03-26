@@ -1,4 +1,23 @@
+# Environment stuff
 venv
+.env
+__pycache__
+
+# Data stuff
+*.gz
+*.tar
+data
+*extracted_frames
+
+# Models
+*.pt
+*.pth
+*.safetensors
+
+# Other scripts
+*/test.py
+*ultralytics
+
 *jepa
 *my_awesome_model
 *video_classification_frozen

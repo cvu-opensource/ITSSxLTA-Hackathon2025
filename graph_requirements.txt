@@ -1,0 +1,9 @@
+numpy<2
+transformers
+datasets
+evaluate
+igraph
+scipy
+scikit-fda
+pyvis
+graphviz
