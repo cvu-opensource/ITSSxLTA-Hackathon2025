@@ -1,93 +1,119 @@
 export const TrafficData = {
-    "Woodlands Checkpoint": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 1.15},  // show relative 'Relative Pixel Speed'
-        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},  // show relative 'Relative Traffic Density' - but can dont show also cuz its scuffed af
-        "num_vehicles": {"average_average": 22.11, "average_relative": 1.16},  // show average 'Average Vehicles Detected'
-        "priority": "Normal",  // show 'Priority'
+    "KJE": {
+        "pixel_speed": {"average_average": 0.0, "average_relative": 1.12},  // show relative 'Relative Pixel Speed'
+        "traffic_density": {"average_average": 0.0, "average_relative": 5.0},  // show relative 'Relative Traffic Density' - but can dont show also cuz its scuffed af
+        "num_vehicles": {"average_average": 10.53, "average_relative": 1.14},  // show average 'Average Vehicles Detected'
+        "priority": "High",  // show 'Priority'
+        "datetime": "2025-03-26T11:25:44",  // show 'Last updated'
+        "accidents_detected": [],  // show 'Accidents detected'
         "average_rainfall": 0.0,  // show 'Average Rainfall Detected (in mm)'
     },
-    "Sentosa": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 1.03},
-        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 2.33, "average_relative": 1.23},
-        "priority": "Normal",
-        "average_rainfall": 0.0,
-    },
-    "Tuas Checkpoint": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 1.05},
-        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 7.17, "average_relative": 1.2},
-        "priority": "Normal",
-        "average_rainfall": 0.0,
-    },
-    "BKE": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 0.96},
-        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 9.67, "average_relative": 1.21},
-        "priority": "Normal",
-        "average_rainfall": 0.0,
-    },
-    "TPE": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 1.03},
-        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 6.83, "average_relative": 1.05},
-        "priority": "Normal",
-        "average_rainfall": 0.0,
-    },
     "AYE": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 1.01},
-        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 4.56, "average_relative": 1.0},
-        "priority": "Normal",
-        "average_rainfall": 0.0,
-    },
-    "PIE": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 1.04},
-        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 7.04, "average_relative": 0.94},
-        "priority": "Normal",
-        "average_rainfall": 0.0,
-    },
-    "KJE": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 1.0},
-        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 4.33, "average_relative": 0.96},
-        "priority": "Normal",
-        "average_rainfall": 0.0,
-    },
-    "ECP": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 1.06},
-        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 5.37, "average_relative": 0.84},
-        "priority": "Normal",
-        "average_rainfall": 0.0,
-    },
-    "CTE": {
         "pixel_speed": {"average_average": 0.0, "average_relative": 0.97},
         "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 10.48, "average_relative": 0.92},
+        "num_vehicles": {"average_average": 14.68, "average_relative": 1.23},
         "priority": "Normal",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
         "average_rainfall": 0.0,
     },
     "SLE": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 1.0},
+        "pixel_speed": {"average_average": 0.0, "average_relative": 0.91},
         "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 9.67, "average_relative": 0.86},
+        "num_vehicles": {"average_average": 21.65, "average_relative": 1.19},
         "priority": "Normal",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
         "average_rainfall": 0.0,
     },
-    "KPE": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 0.94},
+    "Woodlands Checkpoint": {
+        "pixel_speed": {"average_average": 0.0, "average_relative": 1.02},
         "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 2.83, "average_relative": 0.9},
+        "num_vehicles": {"average_average": 25.47, "average_relative": 1.06},
         "priority": "Normal",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
+        "average_rainfall": 0.0,
+    },
+    "ECP": {
+        "pixel_speed": {"average_average": 0.0, "average_relative": 1.01},
+        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
+        "num_vehicles": {"average_average": 12.11, "average_relative": 1.02},
+        "priority": "Normal",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
+        "average_rainfall": 0.0,
+    },
+    "PIE": {
+        "pixel_speed": {"average_average": 0.0, "average_relative": 0.93},
+        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
+        "num_vehicles": {"average_average": 22.63, "average_relative": 1.06},
+        "priority": "Normal",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
+        "average_rainfall": 0.0,
+    },
+    "TPE": {
+        "pixel_speed": {"average_average": 0.0, "average_relative": 1.04},
+        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
+        "num_vehicles": {"average_average": 17.04, "average_relative": 0.92},
+        "priority": "Normal",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
+        "average_rainfall": 0.0,
+    },
+    "CTE": {
+        "pixel_speed": {"average_average": 0.0, "average_relative": 1.02},
+        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
+        "num_vehicles": {"average_average": 35.45, "average_relative": 0.84},
+        "priority": "Normal",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
         "average_rainfall": 0.0,
     },
     "MCE": {
-        "pixel_speed": {"average_average": 0.0, "average_relative": 1.03},
+        "pixel_speed": {"average_average": 0.0, "average_relative": 0.6},
         "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
-        "num_vehicles": {"average_average": 0.2, "average_relative": 0.2},
+        "num_vehicles": {"average_average": 2.11, "average_relative": 1.01},
+        "priority": "Normal",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
+        "average_rainfall": 0.0,
+    },
+    "BKE": {
+        "pixel_speed": {"average_average": 0.0, "average_relative": 0.99},
+        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
+        "num_vehicles": {"average_average": 16.95, "average_relative": 0.51},
+        "priority": "Normal",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
+        "average_rainfall": 0.0,
+    },
+    "KPE": {
+        "pixel_speed": {"average_average": 0.0, "average_relative": 0.74},
+        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
+        "num_vehicles": {"average_average": 5.3, "average_relative": 0.65},
         "priority": "Low",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
+        "average_rainfall": 0.0,
+    },
+    "Tuas Checkpoint": {
+        "pixel_speed": {"average_average": 0.0, "average_relative": 0.57},
+        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
+        "num_vehicles": {"average_average": 15.48, "average_relative": 0.38},
+        "priority": "Low",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
+        "average_rainfall": 0.0,
+    },
+    "Sentosa": {
+        "pixel_speed": {"average_average": 0.0, "average_relative": 0.54},
+        "traffic_density": {"average_average": 0.0, "average_relative": 0.0},
+        "num_vehicles": {"average_average": 9.62, "average_relative": 0.15},
+        "priority": "Low",
+        "datetime": "2025-03-26T11:25:44",
+        "accidents_detected": [],
         "average_rainfall": 0.0,
     },
 }

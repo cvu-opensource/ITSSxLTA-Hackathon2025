@@ -1,7 +1,7 @@
 import os
 import logging
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import asyncio
 from httpx import AsyncClient
@@ -170,7 +170,7 @@ def priority_mapping(statistics):
 
 def process_grouped_traffic_data(traffic_data):
     """
-    Given n records of traffic data for different cameras, group cameras based on mapping,
+    Given n records of traffic data for different cameras, group cameras based on mapping, and sensors where accidents were detected
     compute the average to determine priority based on relative values
     """
     grouped_data = {}
@@ -216,9 +216,24 @@ def process_grouped_traffic_data(traffic_data):
     grouped_data = {
         key: {
             **val,
-            **{'priority': priority_mapping(val), 'datetime': datetimes[key]},
+            **{
+                'priority': priority_mapping(val),
+                'datetime': datetimes[key]
+            },
         } for (key, val) in grouped_data
     }
+    return grouped_data
+
+def process_grouped_accident_data(grouped_data, accidents_data):
+    """
+    Given groups of traffic sensors, and record of cameras where accidents were detected,
+    combine accidents detected into grouped data
+    """
+    for area in grouped_data:
+        grouped_data[area]['accidents_detected'] = []
+        for camera_id in camera_mapping[area]:
+            if camera_id in accidents_data:
+                grouped_data[area]['accidents_detected'].append(accidents_data[camera_id])
     return grouped_data
 
 def process_grouped_weather_data(grouped_data, weather_data):
@@ -410,8 +425,9 @@ async def get_live_traffic_updates():
         return {'success': False, 'message': f'Database service unreachable due to {e}'}
     
     result = {}
+    accidents_detected = {}
     logger.info('Retrieving traffic data for live traffic updates.')
-    for camera_id in camera_data:
+    for camera_id, camera_deets in camera_data.items():
 
         # Get traffic data per sensor
         data = {'lta_camera_id': camera_id, 'n': 20}
@@ -424,9 +440,23 @@ async def get_live_traffic_updates():
         except Exception as e:
             logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
             return {'success': False, 'message': f'Database service unreachable due to {e}'}
+
+        # Check if last accident was was within 1 hour interval
+        data = {'lta_camera_id': camera_id, 'n': 1}
+        try:
+            accident_data = db.get_accidents_by_sensor_last_n(data)[0]
+            if datetime.fromisoformat(accident_data['datetime']) + timedelta(hours=1) >= datetime.now():
+                accidents_detected[camera_id] = camera_deets['description']
+
+        except Exception as e:
+            logger.error(f'Error connecting to DB service for get_traffic_flow_by_sensor_last_n: {e}')
+            return {'success': False, 'message': f'Database service unreachable due to {e}'}
         
     logger.info('Grouping traffic data for live traffic updates.')
     result = process_grouped_traffic_data(result)
+
+    logger.info('Grouping traffic and accident data for live traffic updates.')
+    result = process_grouped_accident_data(result, accidents_detected)
 
     logger.info('Getting weather data for live traffic updates.')
     weather_data = get_weather_sensor_data()

@@ -1,9 +1,11 @@
 import os
 from dotenv import load_dotenv
-
+import json
 import requests
+import pickle
 
 load_dotenv()
+# print('os.environ', os.environ)
 
 
 class LLMDebater:
@@ -11,8 +13,9 @@ class LLMDebater:
     A class that facilitates a debate between 2 LLMs to propose and analyse possible solutions
     """
 
-    def __init__(self, model_url):
-        self.model_url = model_url
+    def __init__(self):
+        self.model_url = "http://localhost:7000/api/chat"
+
         self.generator_persona = 'Urban Traffic Engineer, focusing on finding the most effective, cost-effective and quick solutions.'
         self.discriminator_persona = 'AI Traffic Analyst, emphasizing efficiency, safety, and long-term sustainability of proposed plans.'
 
@@ -22,22 +25,37 @@ class LLMDebater:
         """
         Structured method to call the LLM and return a response
         """
+        context = context.replace("'", "")
         prompt = f"Your role is: {role}\n\nThis is the context: {context}\n\nDo this: {message}\nResponse:"
-        try:
-            response = requests.post(
-                self.model_url,
-                json={
-                    "model": "deepseek-chat",
-                    "messages": [
-                        {"role": "user", "content": prompt}
-                    ],
-                    "temperature": 0.7},
-                timeout=10  # Set timeout for better handling
-            )
-            response.raise_for_status()
-            return response.json().get("choices", [{}])[0].get("message", {}).get("content", "").strip()
-        except Exception as e:
-            return f"Error communicating with local model: {e}"
+        # prompt = prompt[:100]
+        # print("prompt", prompt)
+        # print('\n\n\n\n\ JSON!!!!!!!!!!!!!', json.dumps({
+        #             "model": "deepseek-r1:1.5b",
+        #             "messages": [
+        #                 {"role": "user", "content": prompt}
+        #             ],
+        #             "temperature": 0.7}))
+        response = requests.post(
+            self.model_url,
+            data=json.dumps({
+                "model": "deepseek-r1:1.5b",
+                "messages": [
+                    {"role": "user", "content": prompt}
+                ],
+                # "temperature": 0.7,
+                "stream": False,
+                }),
+            timeout=10  # Set timeout for better handling
+        )
+        # print(eval(response.content.decode('utf-8')))
+        response.raise_for_status()
+        response_dict = eval(response.content.decode('utf-8').replace('true', 'True'))
+        response = response_dict['message']['content'].split('</think>')[-1]
+
+        return response
+        # except Exception as e:
+        #     return f"Error communicating with local model: {e}"
+        
 
     def debate(self, traffic_data, graph_context, max_rounds=3):
         """
@@ -58,21 +76,22 @@ class LLMDebater:
             "Discuss and propose solutions to reduce accident rates and traffic congestion in the network."
         )
         specifications = 'Keep your responses clear and concised, always following a structured manner.'
-
         message = "Start the discussion by proposing a solution to reduce traffic congestion and accidents in the proposed region."
+
         for round_num in range(max_rounds):
             # LLM 1 proposes a solution
-            response1 = self.generate_response(self.persona1, problem_statement, message + specifications)
+            response1 = self.generate_response(self.generator_persona, problem_statement, message + specifications)
+
             self.conversation_history.append({"role": "LLM1", "content": response1})
-            
+            # print('response1', response1)
             # LLM 2 critiques and refines the solution
-            message = f'Generate critique for this solution and refine it: {response1}\n'
-            response2 = self.generate_response(self.persona2, problem_statement, message + specifications)
+            message = f'An {self.generator_persona} created this solution. Critique and refine it: {response1}\n'
+            response2 = self.generate_response(self.discriminator_persona, problem_statement, message + specifications)
             self.conversation_history.append({"role": "LLM2", "content": response2})
             
             # Update the message for the next round
             message = f"Refined solution so far: {response2}\nFurther improve or debate this."
-
+            # print('response2', response2)
         return self.conversation_history
 
 def main():
