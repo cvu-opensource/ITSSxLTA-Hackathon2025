@@ -14,12 +14,11 @@ class TrafficGraph():
     """
     Parses a numpy array and some user-defined dictionaries into a graph.
     """
-    def __init__(self, factors:dict[int, str], hierarchies:dict[int, list]):  # TODO: I was about to remove these but not too sure if u wld rather keep first
+    def __init__(self):  # nope all g
         """
         Instantiates nx.DiGraph and adds nodes. Edges are added later so we can threshold the weights.
 
         Args:
-            - factors: dictionary mapping the string factors to an integer.
             - hierarchies: dictionary mapping an informative, to an integer representing a certain graph order.
                 there are 4 elements: list of indexes, colours, x and y of the starting node. # TODO finalize this
         """

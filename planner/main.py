@@ -30,14 +30,14 @@ def process_traffic_data(traffic_data):
         processed_data['location'] = all_data['camera_data']['description']
 
         # Get traffic flow information
-        processed_data['average_pixel_speed'] = all_data['traffic_data']['average_pixel_speed']
-        processed_data['average_traffic_density'] = all_data['traffic_data']['average_traffic_density']
-        processed_data['average_vehicles'] = all_data['traffic_data']['average_vehicles']
+        processed_data['average_pixel_speed'] = all_data['traffic_data']['pixel_speed']
+        processed_data['average_traffic_density'] = all_data['traffic_data']['traffic_density']
+        processed_data['average_vehicles'] = all_data['traffic_data']['num_vehicles']
 
         # Get unique accident times for each sensor location
-        for accident in all_data['traffic_data']['accidents']:
+        for accident in all_data['accident_data']:
             processed_data['accidents'] = processed_data.get('accidents', set())
-            processed_data['accidents'].add(accident)
+            processed_data['accidents'].add(accident['datetime'])
 
         processed_datas.append(processed_data)
     return processed_datas
