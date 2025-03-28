@@ -30,14 +30,14 @@ def process_traffic_data(traffic_data):
         processed_data['location'] = all_data['camera_data']['description']
 
         # Get traffic flow information
-        processed_data['average_pixel_speed'] = all_data['traffic_data']['average_pixel_speed']
-        processed_data['average_traffic_density'] = all_data['traffic_data']['average_traffic_density']
-        processed_data['average_vehicles'] = all_data['traffic_data']['average_vehicles']
+        processed_data['average_pixel_speed'] = all_data['traffic_data']['pixel_speed']
+        processed_data['average_traffic_density'] = all_data['traffic_data']['traffic_density']
+        processed_data['average_vehicles'] = all_data['traffic_data']['num_vehicles']
 
         # Get unique accident times for each sensor location
-        for accident in all_data['traffic_data']['accidents']:
+        for accident in all_data['accident_data']:
             processed_data['accidents'] = processed_data.get('accidents', set())
-            processed_data['accidents'].add(accident)
+            processed_data['accidents'].add(accident['datetime'])
 
         processed_datas.append(processed_data)
     return processed_datas
@@ -52,7 +52,7 @@ def get_planning_recommendations(data):
     sg_location: str = data['location']
     query_nodes: list[str] = data['query_nodes']
     selected_graph = GRAPHS[sg_location]
-    graph_context_string = selected_graph.get_context_for_llm(query_nodes=query_nodes)
+    graph_context_string, html_paths = selected_graph.get_context_for_llm(query_nodes=query_nodes)
 
     # Generate traffic data as LLM context
     processed_traffic_data = process_traffic_data(data['traffic_data'])
@@ -60,7 +60,7 @@ def get_planning_recommendations(data):
     # Start debate and get debate history back
     history = llmdebater.debate(processed_traffic_data, graph_context_string, max_rounds=5)
 
-    return history
+    return history, html_paths
 
 @app.get('/healthz')
 def health_check():
