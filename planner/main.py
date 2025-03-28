@@ -60,7 +60,7 @@ def get_planning_recommendations(data):
     # Start debate and get debate history back
     history = llmdebater.debate(processed_traffic_data, graph_context_string, max_rounds=5)
 
-    return history, html_paths
+    return {'chat_history': history, 'html': html_paths}
 
 @app.get('/healthz')
 def health_check():

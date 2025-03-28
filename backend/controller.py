@@ -1,4 +1,5 @@
 import os
+import pickle
 import logging
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -509,8 +510,13 @@ async def get_recommendations(area):
     logger.info(f'Sending data to retrieve recommendations. {recommendation_data}')
     try:
         async with AsyncClient() as client:
-            response = await client.post(PLANNING_API + '/get_planning_recommendations', json=data)
-            return response.json()
+            response = await client.post(PLANNING_API + '/get_planning_recommendations', json=data).json()
     except Exception as e:
         logger.error(f'Error retrieving planning recommendations due to {e}')
         return {'success': False, 'message': f'Error retrieving planning recommendations: {e}'}
+    
+    # If response is received, 
+    html_filepaths = response.pop('html_filepaths')
+    for filepath in html_filepaths:
+        pass 
+        # TODO: not too sure what to do here ben pls thz
