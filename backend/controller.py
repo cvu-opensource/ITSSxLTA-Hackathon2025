@@ -516,7 +516,26 @@ async def get_recommendations(area):
         return {'success': False, 'message': f'Error retrieving planning recommendations: {e}'}
     
     # If response is received, 
-    html_filepaths = response.pop('html_filepaths')
-    for filepath in html_filepaths:
-        pass 
-        # TODO: not too sure what to do here ben pls thz
+    html_cereals = response.pop('serial_htmls')
+    history = response.pop('chat_history')
+    loaded_cereals = []
+    for cereal in html_cereals:
+        html_graph = pickle.loads(cereal)
+        html_graph = str(html_graph, 'utf-8')
+        loaded_cereals.append(html_graph)
+        
+        # TODO: now html_graph is a string object. How can this be passed to yym?
+        # 1. Idk save as file here? i dont see how yym access this but if you want to cache stuff then uhh lol bet
+        # import io
+        # with io.open("output.html", "w", encoding="utf-8") as file:
+            # file.write(html_graph)
+    
+    # 2. just pump it into list and into json, and then you can combine the outputs of the chat history with this idk whats the endpoint like
+    import json
+    recommendations = json.dumps({'html': loaded_cereals, 'history': history})
+    # uty idk how yym recieves it
+
+    return recommendations
+
+
+
