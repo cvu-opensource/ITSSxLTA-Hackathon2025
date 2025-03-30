@@ -31,12 +31,12 @@ Our solution consists of **three key components**:
 
 ## **Key Benefits**  
 
-1) **Faster Incident Detection** – AI-powered automation reduces manual monitoring delays.  
+1) **Faster Incident Detection** - AI-powered automation reduces manual monitoring delays.  
 
-2) **Enhanced Situational Awareness** – Real-time insights allow for **quicker, more informed responses**.  
+2) **Enhanced Situational Awareness** - Real-time high level insights allow for **quicker, more informed responses**.  
 
-3) **Predictive Traffic Intelligence** – Data-driven planning helps **prevent congestion and accidents before they happen**.  
+3) **Predictive Traffic Intelligence** - Data-driven planning helps notify and prevent congestion and accidents **before they happen**.  
 
-4) **More Efficient Planning** – AI-assisted debate streamlines decision-making for **future road improvements**.  
+4) **More Efficient Planning** - AI-assisted debate streamlines decision-making for **future road improvements**.  
 
-By **combining real-time AI detection, an interactive monitoring system, and intelligent traffic planning**, SAME **revolutionizes traffic management**, making Singapore’s expressways **safer, smarter, and more efficient**.  
+By **combining real-time proactive AI detection, an interactive monitoring system, and intelligent traffic planning**, SAME revolutionizes traffic management, making Singapore’s expressways **safer, smarter, and more efficient**.
