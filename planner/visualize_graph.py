@@ -127,14 +127,17 @@ class TrafficGraph():
 
                 context_string += f"{higher_order} has a causal factor of {weight} with {lower_order}. "
         
-        html_paths = []
+        serial_box = []
         for idx, pyvis_network in enumerate(pyvis_networks):
             path = Path(f'temp_{idx}.html')
             full_path = path.resolve().name
-            html_paths.append(full_path)
             pyvis_network.save_graph(full_path)
+            with open(full_path, 'rb') as file:
+                file = file.read()
+                serial = pickle.dumps(file)
+            serial_box.append(serial)
 
-        return context_string, html_paths
+        return context_string, serial_box
         
 
     def query_graph(self,
@@ -307,12 +310,12 @@ for key, network in E_est.items():
 
     # simulating a query 
 
-query = ['PIE', ['Surface', 'Visibility', 'Traffic Hazard']]
-selected_graph = GRAPHS[query[0]]
+# query = ['PIE', ['Surface', 'Visibility', 'Traffic Hazard']]
+# selected_graph = GRAPHS[query[0]]
 # print(selected_network)
 
 # graph = TrafficGraph()
 # graph.add_edges(selected_network, weight_thresh=0.1)
-thing = selected_graph.get_context_for_llm(query_nodes=query[1])
+# thing = selected_graph.get_context_for_llm(query_nodes=query[1])
 # print(thing)
 # selected_graph.vis_digraph(E_est[query[0]], save_path=f'graph_0.png')

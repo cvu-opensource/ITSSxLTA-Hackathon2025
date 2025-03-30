@@ -52,7 +52,7 @@ def get_planning_recommendations(data):
     sg_location: str = data['location']
     query_nodes: list[str] = data['query_nodes']
     selected_graph = GRAPHS[sg_location]
-    graph_context_string, html_paths = selected_graph.get_context_for_llm(query_nodes=query_nodes)
+    graph_context_string, serial_htmls = selected_graph.get_context_for_llm(query_nodes=query_nodes)
 
     # Generate traffic data as LLM context
     processed_traffic_data = process_traffic_data(data['traffic_data'])
@@ -60,7 +60,8 @@ def get_planning_recommendations(data):
     # Start debate and get debate history back
     history = llmdebater.debate(processed_traffic_data, graph_context_string, max_rounds=5)
 
-    return {'chat_history': history, 'html': html_paths}
+    return {'chat_history': history, 'serial_htmls': serial_htmls}
+    # return {'serial_htmls': serial_htmls}
 
 @app.get('/healthz')
 def health_check():
@@ -76,6 +77,14 @@ if __name__=='__main__':
     fake_data = {
         'traffic_data': TPE,  # TODO: change this as u need
         'location': 'TPE',   # TODO: and this too
-        'query_nodes': ['surface', 'visibility', 'Traffic\n Hazard']
+        'query_nodes': ['Surface', 'Visibility', 'Traffic Hazard']
     }
-    print(get_planning_recommendations(fake_data))
+    # import io
+    out = get_planning_recommendations(fake_data)
+    print(out)
+    # for cereal in out['serial_htmls']:
+    #     html_graph = pickle.loads(cereal)
+    #     html_graph = str(html_graph, 'utf-8')
+    #     print('type htmlgraph', type(html_graph))
+    #     with io.open("/mnt/e/output.html", "w", encoding="utf-8") as file:
+    #         file.write(html_graph)
