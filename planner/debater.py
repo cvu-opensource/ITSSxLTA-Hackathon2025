@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 import json
 import requests
-import pickle
 
 load_dotenv()
 # print('os.environ', os.environ)
@@ -14,7 +13,7 @@ class LLMDebater:
     """
 
     def __init__(self, url):
-        self.model_url = "http://localhost:7000/api/chat"
+        self.model_url = url
 
         self.engineer_persona = 'Urban Traffic Engineer, focusing on finding the most effective, cost-effective and quick solutions.'
         self.critic_persona = 'AI Traffic Analyst, emphasizing efficiency, safety, and long-term sustainability of proposed plans.'

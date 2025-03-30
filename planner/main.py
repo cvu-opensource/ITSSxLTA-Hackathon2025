@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 
 from fastapi import FastAPI
 from debater import LLMDebater
-import pickle
 from visualize_graph import GRAPHS
 
 # Initialise app and classes
@@ -79,9 +78,9 @@ if __name__=='__main__':
         'location': 'TPE',   # TODO: and this too
         'query_nodes': ['Surface', 'Visibility', 'Traffic Hazard']
     }
-    # import io
     out = get_planning_recommendations(fake_data)
-    print(out)
+
+    # import io
     # for cereal in out['serial_htmls']:
     #     html_graph = pickle.loads(cereal)
     #     html_graph = str(html_graph, 'utf-8')
