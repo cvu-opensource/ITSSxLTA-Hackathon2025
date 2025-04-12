@@ -22,12 +22,19 @@ Our solution consists of **three key components**:
 - Displays a **traffic overview dashboard** with **aggregated congestion levels, vehicle counts, accident alerts, and weather data** by expressway, allowing operators to get a high level overview of various conditions and incident risks.
 - Prioritizes high-risk areas, helping operators **focus on regions with greater risks of incidents first**.  
 
+<img src="static/Interactive_Map.png" alt="Interactive Map" width="800">
+<img src="static/Overview_Dashboard.png" alt="Overview Dashboard" width="800">
+
 ### **3. AI-Driven Traffic Planning via LLM Debate System**  
 - Uses **two specialized LLMs** to **debate and refine** traffic solutions:  
     - **Creative LLM** proposes **new strategies** to reduce congestion and accidents.  
     - **Feasibility LLM** evaluates practicality, ensuring **realistic and data-backed solutions**.  
 - Leverages **historical accident data, expressway relationships, and sensor analytics** to generate **actionable recommendations for planners**.
 - Helps planners **save time, consider diverse perspectives, and make informed decisions** to improve long-term traffic management.
+
+
+<img src="static/AI_Debate.png" alt="AI Debate Selection" width="800">
+<img src="static/AI_Debate_2.png" alt="AI Debate" width="800">
 
 ## **Key Benefits**  
 
